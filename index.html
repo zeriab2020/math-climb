@@ -116,6 +116,30 @@ th{color:var(--muted);font-weight:700;font-size:.78rem;text-transform:uppercase;
 .reset{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
 .small{font:700 .85rem var(--body);padding:6px 12px;border-radius:10px;cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .small.warn{border-color:var(--bad);color:var(--bad)}
+.rep{display:flex;flex-direction:column;gap:20px;margin-top:14px}
+.rep h3{font:800 1.05rem var(--display);margin:0 0 8px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg)}
+.kpi b{display:block;font:800 1.5rem/1.15 var(--display);font-variant-numeric:tabular-nums}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.flag{border-left:4px solid var(--bad);background:var(--bad-bg);border-radius:8px;padding:10px 12px;margin-bottom:8px;color:var(--ink)}
+.flag.ok{border-left-color:var(--good);background:var(--good-bg)}
+.flag small{display:block;margin-top:4px;line-height:1.45}
+.flag em{color:var(--muted);font-style:normal}
+.days{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;align-items:end;height:110px;border-bottom:1px solid var(--line)}
+.day{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:1px}
+.day i{display:block;border-radius:2px;min-height:2px}
+.day .g{background:var(--good)}.day .y{background:var(--sun)}.day .r{background:var(--bad)}
+.dlab{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;font-size:.68rem;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:14px;font-size:.8rem;color:var(--muted);flex-wrap:wrap;margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.miss{border-bottom:1px solid var(--line);padding:8px 0;font-size:.92rem}
+.miss .meta{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.miss .bad{color:var(--bad);font-weight:700}.miss .good{color:var(--good);font-weight:700}
+.up{color:var(--good);font-weight:700}.down{color:var(--bad);font-weight:700}
+.repbtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.repbtns a{text-decoration:none}
+#repText{width:100%;height:140px;font:12px var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px}
 @media (prefers-reduced-motion: no-preference){.pop{animation:pop .35s ease}@keyframes pop{0%{transform:scale(.96);opacity:.6}100%{transform:none;opacity:1}}}
 body{margin:0}
 </style>
@@ -162,10 +186,10 @@ body{margin:0}
   </article>
 
   <details id="parent">
-    <summary>Grown-up corner: progress by topic</summary>
+    <summary>Grown-up corner: progress report</summary>
     <div class="seg" role="group" aria-label="Question set"><button id="g4" aria-pressed="true">Set A</button><button id="g5" aria-pressed="false">Set B</button></div>
     <p class="how">Questions follow the style of her school book's tests. Each topic has its own level from 1 to 10. Three first-try correct answers in a row move up one level. Two misses in a row move down one level. A wrong answer first shows a hint, then the worked solution. "Practice test" gives 20 mixed problems like a cumulative test and scores first-try answers.</p>
-    <div class="tbl"><table><thead><tr><th>Topic</th><th>Level</th><th>Answered</th><th>First try</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    <div class="rep" id="report"></div>
     <div class="reset"><button class="small" id="reset" type="button">Reset this set</button><span id="confirmWrap" hidden><button class="small warn" id="confirm" type="button">Yes, erase progress</button> <button class="small" id="cancel" type="button">Keep it</button></span></div>
   </details>
 </div>
@@ -325,12 +349,12 @@ time(L){
   const h=R(1,12); let m;
   if(L<=1)m=0;else if(L<=2)m=pick([0,15,30,45]);else if(L<=4)m=5*R(0,11);else m=R(0,59);
   if(L<=6){const ap=pick(['a.m.','p.m.']),when=ap==='a.m.'?'morning':'afternoon';
-    return {kind:'time',ask:`If it is ${when}, what time is shown by this clock?`,html:'',fig:clockFig(h,m),h,m,ap,show:`${h}:${pad(m)} ${ap}`,
+    return {kind:'time',ask:`If it is ${when}, what time is shown by this clock?`,html:'',fig:clockFig(h,m),note:`clock showed ${h}:${pad(m)}`,h,m,ap,show:`${h}:${pad(m)} ${ap}`,
       hint:'The short hand shows the hour: use the last number it passed. The long hand shows minutes: count by 5s from the 12.',
       steps:`The short hand has passed the ${h}, so the hour is ${h}. The long hand shows ${m} minutes. It is ${h}:${pad(m)} ${ap}.`}}
   const add=L<=8?5*R(3,11):60*R(1,3)+5*R(1,11);const tot=h*60+m+add;const h2=((Math.floor(tot/60)-1)%12)+1,m2=tot%60;
   const say=add>=60?`${Math.floor(add/60)} hour${add>=120?'s':''} and ${add%60} minutes`:`${add} minutes`;
-  return {kind:'time',ask:`What time will it be ${say} after the time shown on this clock?`,html:'',fig:clockFig(h,m),h:h2,m:m2,ap:null,show:`${h2}:${pad(m2)}`,
+  return {kind:'time',ask:`What time will it be ${say} after the time shown on this clock?`,html:'',fig:clockFig(h,m),note:`clock showed ${h}:${pad(m)}`,h:h2,m:m2,ap:null,show:`${h2}:${pad(m2)}`,
     hint:`First read the clock: ${h}:${pad(m)}. Then count forward ${say}.`,steps:`${h}:${pad(m)} plus ${say} is ${h2}:${pad(m2)}.`};
 },
 geo(L,g){
@@ -369,7 +393,7 @@ frac(L,g){
     const cfg=L<=1?pick([[1,2],[2,1],[1,3],[2,2]]):L<=2?pick([[2,2],[1,4],[1,3],[2,3]]):L<=4?pick([[3,3],[2,3],[2,4],[1,5]]):pick([[3,4],[4,4],[2,5],[3,3]]);
     const [r,c]=cfg,n=r*c,k=R(1,n-1);const on=new Set(shuffle([...Array(n).keys()]).slice(0,k));
     const not=L>=3&&Math.random()<.35;const shape=r===c?'square':'rectangle';const top=not?n-k:k;
-    return {ask:`What fraction of this ${shape} is ${not?'not shaded':'shaded'}?`,html:'',fig:`<div style="max-width:170px">${gridFig(r,c,on)}</div>`,ans:Q(top,n),fr:true,hint:'Count all the equal parts for the bottom number. Count the parts you are asked about for the top number.',steps:`${top} of the ${n} equal parts are ${not?'not shaded':'shaded'}, so the answer is ${top}/${n}.`};
+    return {ask:`What fraction of this ${shape} is ${not?'not shaded':'shaded'}?`,html:'',fig:`<div style="max-width:170px">${gridFig(r,c,on)}</div>`,note:`${k} of ${n} parts shaded`,ans:Q(top,n),fr:true,hint:'Count all the equal parts for the bottom number. Count the parts you are asked about for the top number.',steps:`${top} of the ${n} equal parts are ${not?'not shaded':'shaded'}, so the answer is ${top}/${n}.`};
   }
   if(L<=6){const d=pick([2,3,4,5,6,8,10]),n=R(1,d-1),k=R(2,9);const s=Q(k*n,d);
     if(Math.random()<.5){const a=pick([3,4,5,6,8,10]),b=R(1,a-1),c=R(1,a-1);return {html:`${F(b,a)} + ${F(c,a)} = ?`,ans:Q(b+c,a),fr:true,hint:'Same bottom numbers: add the tops and keep the bottom.',steps:`${b} + ${c} = ${b+c}, so ${F(b+c,a)} = ${showFrac(Q(b+c,a))}.`}}
@@ -463,7 +487,7 @@ function numLine(L){
   const [lab,t]=cfg,den=L===10?10:1;const start=L===10?R(0,8)*10:lab*R(L<=3?0:2,L<=3?4:30);
   const n=2*lab/t;let k;do{k=R(1,n-1)}while((k*t)%lab===0);const val=start+k*t;
   const fmt=v=>den===10?(v/10).toFixed(1):N(v);
-  return {ask:'To what number is the arrow pointing?',html:'',fig:lineFig(start,lab,t,val,fmt),ans:Q(val,den),dec:den===10,
+  return {ask:'To what number is the arrow pointing?',html:'',fig:lineFig(start,lab,t,val,fmt),note:`number line from ${fmt(start)} to ${fmt(start+2*lab)}, arrow at ${fmt(val)}`,ans:Q(val,den),dec:den===10,
     hint:`The labeled marks go up by ${fmt(lab)}. Count the small spaces between two labels to find how much each small step is worth.`,
     steps:`Each small step is ${fmt(t)}. The arrow is ${k} steps after ${fmt(start)}, so it points to ${fmt(val)}.`};
 }
@@ -503,22 +527,104 @@ function renderStatus(){
   $('ladder').innerHTML=Array.from({length:10},(_,i)=>`<div class="rung ${i+1<L?'on':i+1===L?'cur':''}" title="Level ${i+1}"></div>`).join('');
   $('streak').innerHTML=L<10?`${[0,1,2].map(i=>`<span class="dot ${i<s.run?'on':''}"></span>`).join('')} <span>${3-s.run} more right in a row to reach level ${L+1}</span>`:'<span>Top level! Keep your streak going.</span>';
 }
+// ---------- progress tracking ----------
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>{const d=document.createElement('div');d.innerHTML=s||'';d.querySelectorAll('.fr').forEach(f=>f.replaceWith(f.children[0].textContent+'/'+f.children[1].textContent));return d.textContent.replace(/\s+/g,' ').trim()};
+function plainQ(){
+  const tmp=$('q').cloneNode(true);
+  tmp.querySelectorAll('.fr').forEach(f=>f.replaceWith(f.children[0].textContent+'/'+f.children[1].textContent));
+  tmp.querySelectorAll('.vert').forEach(v=>{const p=[...v.children].map(c=>c.textContent.replace(/ /g,'').trim());v.replaceWith(p[2]?`${p[0]} ${p[1]} = ${p[2]}`:`${p[0]} ${p[1]}`)});
+  tmp.querySelectorAll('input').forEach(i=>i.replaceWith('__'));
+  const body=tmp.textContent.replace(/\s+/g,' ').trim();
+  return ((cur.wordy?'':(cur.ask||''))+(body?' '+body:'')+(cur.fig?` (${cur.note||'picture'})`:'')).trim();
+}
+const choiceText=i=>strip(cur.choices[i])||('choice '+'ABCD'[i]);
+const inputText=()=>cur.kind==='blanks'?[...$('q').querySelectorAll('.blank')].map(i=>i.value.trim()).join(', '):$('ans').value.trim();
+function logIt(outcome){
+  DB.log=DB.log||[];
+  DB.log.push({t:Date.now(),s:DB.grade,p:cur.topic,l:cur.lv,r:outcome,q:cur.text,a:cur.answers.slice(0,2),c:strip(answerText()),
+    k:strip(cur.hint).split(/(?<=\.)\s/)[0].replace(/\d[\d,.]*/g,'#').slice(0,120),dt:Math.min(Date.now()-cur.t0,300000),x:G().topic==='mix'?1:0});
+  if(DB.log.length>2000)DB.log=DB.log.slice(-2000);
+}
+const D=864e5;
+const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()};
+const fmtD=t=>new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+const pct=a=>a.length?Math.round(100*a.filter(e=>e.r==='first').length/a.length):null;
+const mins=a=>Math.round(a.reduce((s,e)=>s+(e.dt||0),0)/6e4);
+function stats(){
+  const now=Date.now(),L=(DB.log||[]).filter(e=>e.s===DB.grade);
+  const tw=L.filter(e=>now-e.t<7*D),lw=L.filter(e=>now-e.t>=7*D&&now-e.t<14*D);
+  const topics=topicsFor().filter(t=>t.id!=='mix').map(t=>{
+    const a=L.filter(e=>e.p===t.id),rec=a.slice(-20),prev=a.slice(-40,-20);
+    let drops=0;for(let i=1;i<rec.length;i++)if(rec[i].l<rec[i-1].l)drops++;
+    const bad=rec.filter(e=>e.r!=='first'),kinds={};bad.forEach(e=>{(kinds[e.k]=kinds[e.k]||[]).push(e)});
+    return {id:t.id,name:t.name,lv:lv(t.id),n:a.length,acc:pct(rec),prev:prev.length>=5?pct(prev):null,drops,miss:bad.length,
+      kinds:Object.entries(kinds).sort((x,y)=>y[1].length-x[1].length).slice(0,2),last:a.length?a[a.length-1].t:0};
+  });
+  const weak=topics.filter(t=>t.n>=5&&(t.acc<70||(t.drops>0&&t.acc<80))).sort((a,b)=>a.acc-b.acc);
+  const strong=topics.filter(t=>t.n>=8&&t.acc>=85).sort((a,b)=>b.acc-a.acc);
+  const days=[];for(let i=13;i>=0;i--){const d=new Date(now-i*D),k=dayKey(d),a=L.filter(e=>dayKey(e.t)===k);
+    days.push({d,f:a.filter(e=>e.r==='first').length,s:a.filter(e=>e.r==='second').length,m:a.filter(e=>e.r==='missed').length})}
+  return {L,tw,lw,topics,weak,strong,days,days14:days.filter(d=>d.f+d.s+d.m).length,
+    tests:(DB.tests||[]).filter(x=>x.s===DB.grade).slice(-5).reverse(),mistakes:L.filter(e=>e.r!=='first').slice(-12).reverse()};
+}
+function reportText(S){
+  const lines=[`Math Climb progress report (${fmtD(Date.now())})`,
+    `This week: ${S.tw.length} problems, ${pct(S.tw)??0}% right on the first try${pct(S.lw)!=null?` (last week ${pct(S.lw)}%)`:''}, ${mins(S.tw)} minutes, ${S.days14} days practiced in the last 2 weeks.`,''];
+  lines.push('NEEDS HELP WITH:');
+  if(S.weak.length)S.weak.forEach(t=>{lines.push(`- ${t.name}: ${t.acc}% first try, level ${t.lv}${t.drops?`, dropped a level ${t.drops}x`:''}`);t.kinds.forEach(([k,a])=>lines.push(`    missed ${a.length}x, e.g. "${a[a.length-1].q}" (answered ${a[a.length-1].a[0]||'-'}, correct ${a[a.length-1].c})`))});
+  else lines.push('- Nothing stands out yet.');
+  lines.push('','DOING WELL:',...(S.strong.length?S.strong.map(t=>`- ${t.name}: ${t.acc}% first try, level ${t.lv}`):['- Not enough practice yet to tell.']));
+  if(S.tests.length)lines.push('','PRACTICE TESTS:',...S.tests.map(x=>`- ${fmtD(x.t)}: ${x.score} / ${TEST_LEN}`));
+  return lines.join('\n');
+}
 function renderTable(){
-  $('tbody').innerHTML=topicsFor().filter(t=>t.id!=='mix').map(t=>{const s=st(t.id);return `<tr><td>${t.name}</td><td>${lv(t.id)}</td><td>${s.seen}</td><td>${s.seen?Math.round(100*s.first/s.seen)+'%':'–'}</td></tr>`}).join('');
+  const r=$('report');if(!r||!$('parent').open)return;
+  const S=stats();
+  if(!S.L.length){r.innerHTML='<p class="how">No answers yet. This report fills in as she practices on this device.</p>';return}
+  const tp=pct(S.tw),lp=pct(S.lw);
+  const kpis=[[S.tw.length,'problems this week'],[tp==null?'–':tp+'%',`right on first try${lp!=null?` (last week ${lp}%)`:''}`],[mins(S.tw),'minutes this week'],[S.days14,'days practiced, last 2 weeks']];
+  const max=Math.max(1,...S.days.map(d=>d.f+d.s+d.m));
+  const bar=d=>`<div class="day" title="${fmtD(d.d)}: ${d.f} first try, ${d.s} second try, ${d.m} missed">${[['m','r'],['s','y'],['f','g']].map(([x,c])=>d[x]?`<i class="${c}" style="height:${(d[x]/max*100).toFixed(1)}%"></i>`:'').join('')}</div>`;
+  const ex=a=>{const e=a[a.length-1];return `“${esc(e.q)}” She answered <span class="bad">${esc(e.a[0]||'–')}</span>, correct is <span class="good">${esc(e.c)}</span>.`};
+  const weak=S.weak.length?S.weak.map(t=>`<div class="flag"><strong>${t.name}</strong>: ${t.acc}% right on first try, level ${t.lv}${t.drops?`, dropped a level ${t.drops}×`:''}
+      <small>${t.kinds.map(([k,a])=>`Missed ${a.length}× ${ex(a)} <em>Skill: ${esc(k)}</em>`).join('<br>')}</small></div>`).join('')
+    :'<p class="how" style="margin:0">Nothing stands out yet. A topic appears here after 5+ tries if she gets under 70% right on the first try.</p>';
+  const strong=S.strong.length?S.strong.map(t=>`<div class="flag ok"><strong>${t.name}</strong>: ${t.acc}% right on first try, level ${t.lv}</div>`).join(''):'<p class="how" style="margin:0">Not enough practice yet to tell.</p>';
+  const trend=t=>t.prev==null||t.acc==null?'':t.acc-t.prev>=10?'<span class="up">▲</span>':t.prev-t.acc>=10?'<span class="down">▼</span>':'';
+  const rows=S.topics.filter(t=>t.n).sort((a,b)=>(a.acc??101)-(b.acc??101)).map(t=>`<tr><td>${t.name}</td><td>${t.lv}</td><td>${t.n}</td><td>${t.acc??'–'}% ${trend(t)}</td><td>${fmtD(t.last)}</td></tr>`).join('');
+  const out=r=>r==='second'?'Fixed on 2nd try':'Missed';
+  const mis=S.mistakes.map(e=>`<div class="miss"><div class="meta">${fmtD(e.t)} · ${esc(tname(e.p))} · level ${e.l} · ${out(e.r)}${e.x?' · practice test':''}</div>${esc(e.q)}<br>She answered <span class="bad">${esc(e.a[0]||'–')}</span>${e.a[1]?`, then ${esc(e.a[1])}`:''}. Correct: <span class="good">${esc(e.c)}</span></div>`).join('');
+  r.innerHTML=`<div class="kpis">${kpis.map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('')}</div>
+    <section><h3>Needs help with</h3>${weak}</section>
+    <section><h3>Doing well</h3>${strong}</section>
+    <section><h3>Last 14 days</h3><div class="days">${S.days.map(bar).join('')}</div><div class="dlab">${S.days.map(d=>`<span>${d.d.getDate()}</span>`).join('')}</div>
+      <div class="legend"><span><i style="background:var(--good)"></i>Right first try</span><span><i style="background:var(--sun)"></i>Right on 2nd try</span><span><i style="background:var(--bad)"></i>Missed</span></div></section>
+    <section><h3>By topic</h3><div class="tbl"><table><thead><tr><th>Topic</th><th>Level</th><th>Answered</th><th>First try (last 20)</th><th>Last practiced</th></tr></thead><tbody>${rows}</tbody></table></div></section>
+    ${S.tests.length?`<section><h3>Practice tests</h3><div class="tbl"><table><tbody>${S.tests.map(x=>`<tr><td>${fmtD(x.t)}</td><td>${x.score} / ${TEST_LEN}</td><td>${Object.keys(x.missed).map(tname).join(', ')||'No misses'}</td></tr>`).join('')}</tbody></table></div></section>`:''}
+    <section><h3>Recent mistakes</h3>${mis||'<p class="how" style="margin:0">No mistakes yet.</p>'}</section>
+    <section><h3>Send this report</h3><div class="repbtns"><button class="small" id="repCopy" type="button">Copy report</button><a class="small" id="repMail" href="#">Email report</a>${navigator.share?'<button class="small" id="repShare" type="button">Share…</button>':''}<span id="repMsg" class="how" style="margin:0"></span></div>
+      <textarea id="repText" readonly hidden></textarea></section>`;
+  const txt=reportText(S);
+  $('repMail').href='mailto:?subject='+encodeURIComponent('Math Climb progress report')+'&body='+encodeURIComponent(txt);
+  $('repCopy').onclick=()=>{const fb=()=>{const t=$('repText');t.hidden=false;t.value=txt;t.focus();t.select();$('repMsg').textContent='Select all and copy the text below.'};
+    if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>$('repMsg').textContent='Copied.',fb);else fb()};
+  if($('repShare'))$('repShare').onclick=()=>navigator.share({title:'Math Climb progress report',text:txt}).catch(()=>{});
 }
 function newQ(){
   const g=G();$('result').hidden=true;$('qbox').hidden=false;
   const testing=g.topic==='mix';
   if(testing&&g.test.i>=TEST_LEN){showResult();return}
   const id=testing?pick(TEST_POOL[DB.grade]):g.topic;
-  const q=GEN[id](lv(id),DB.grade);q.topic=id;q.kind=q.kind||'num';cur=q;tries=0;done=false;
+  const q=GEN[id](lv(id),DB.grade);q.topic=id;q.kind=q.kind||'num';q.lv=lv(id);q.t0=Date.now();q.answers=[];cur=q;tries=0;done=false;
   $('qTopic').textContent=testing?`Practice test · ${tname(id)}`:tname(id);
   $('qNum').textContent=testing?`Problem ${g.test.i+1} of ${TEST_LEN}`:`Problem ${g.n+1}`;
   $('ask').textContent=q.ask||'Solve.';
   const qe=$('q');qe.className='q'+(q.wordy?' wordy':'');qe.innerHTML=q.html||'';
   const fig=$('fig');fig.hidden=!q.fig;fig.innerHTML=q.fig||'';
+  q.text=plainQ();
   const ch=$('choices');ch.hidden=q.kind!=='choice';ch.innerHTML='';
-  if(q.kind==='choice')q.choices.forEach((h,i)=>{const b=document.createElement('button');b.type='button';b.className='choice';b.innerHTML=`<span class="lt">${'ABCD'[i]}.</span>${h}`;b.onclick=()=>{if(done||b.disabled)return;grade(i===q.correct?{ok:true}:{ok:false},b)};ch.appendChild(b)});
+  if(q.kind==='choice')q.choices.forEach((h,i)=>{const b=document.createElement('button');b.type='button';b.className='choice';b.innerHTML=`<span class="lt">${'ABCD'[i]}.</span>${h}`;b.onclick=()=>{if(done||b.disabled)return;q.answers.push(choiceText(i));grade(i===q.correct?{ok:true}:{ok:false},b)};ch.appendChild(b)});
   const a=$('ans');a.hidden=q.kind==='choice'||q.kind==='blanks';a.value='';a.disabled=false;
   a.placeholder=q.kind==='time'?'like 4:35':'Your answer';
   $('go').hidden=q.kind==='choice';
@@ -533,11 +639,13 @@ function newQ(){
 function toast(msg){const t=$('toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,3500)}
 function feedback(kind,head,steps){const f=$('fb');f.className='fb '+kind;f.innerHTML=`${head}${steps?`<span class="steps">${steps}</span>`:''}`;f.hidden=false}
 function answerText(){if(cur.show)return cur.show;return cur.fr?showFrac(cur.ans):cur.dec?showDec(cur.ans):N(cur.ans.n/cur.ans.d)}
-function finish(firstTry){
+function finish(firstTry,outcome){
+  logIt(outcome);
   done=true;const g=G();$('ans').disabled=true;$('go').hidden=true;
   $('q').querySelectorAll('.blank').forEach(b=>b.disabled=true);$('choices').querySelectorAll('.choice').forEach(b=>b.disabled=true);
   g.n++;
-  if(g.topic==='mix'){g.test.i++;if(firstTry)g.test.score++;else g.test.missed[cur.topic]=(g.test.missed[cur.topic]||0)+1}
+  if(g.topic==='mix'){g.test.i++;if(firstTry)g.test.score++;else g.test.missed[cur.topic]=(g.test.missed[cur.topic]||0)+1;
+    if(g.test.i>=TEST_LEN){DB.tests=DB.tests||[];DB.tests.push({t:Date.now(),s:DB.grade,score:g.test.score,missed:Object.assign({},g.test.missed)})}}
   $('next').textContent=g.topic==='mix'&&g.test.i>=TEST_LEN?'See my score':'Next problem';
   $('next').hidden=false;$('next').focus({preventScroll:true});save();renderStatus();renderTable();
 }
@@ -558,7 +666,7 @@ function grade(res,btn){
       if(s.run>=3&&lv(id)<10){g.lv[id]=lv(id)+1;s.run=0;toast(`Level up! ${tname(id)} is now level ${g.lv[id]}.`)}
       feedback('good',pick(['Correct!','Nice work!','Exactly right!','You got it!']),cur.steps);
     }else{s.seen++;s.run=0;g.stars+=1;feedback('good','Got it on the second try. Good fixing!',cur.steps)}
-    finish(tries===0);return;
+    finish(tries===0,tries===0?'first':'second');return;
   }
   tries++;
   if(btn){btn.classList.add('wrong');btn.disabled=true}
@@ -567,7 +675,7 @@ function grade(res,btn){
   if(cur.kind==='choice')$('choices').children[cur.correct].classList.add('right');
   feedback('bad',`The answer is ${answerText()}.`,cur.steps);
   if(s.miss>=2&&lv(id)>1){g.lv[id]=lv(id)-1;s.miss=0;toast(`Let's practice ${tname(id)} level ${g.lv[id]} a bit more, then climb back up.`)}
-  finish(false);
+  finish(false,'missed');
 }
 function showResult(){
   const g=G(),t=g.test;$('qbox').hidden=true;const r=$('result');r.hidden=false;
@@ -581,7 +689,8 @@ function showResult(){
   $('again').focus({preventScroll:true});
 }
 
-$('form').addEventListener('submit',e=>{e.preventDefault();if(done||cur.kind==='choice')return;grade(readAnswer())});
+$('form').addEventListener('submit',e=>{e.preventDefault();if(done||cur.kind==='choice')return;const res=readAnswer();if(!res.err)cur.answers.push(inputText());grade(res)});
+$('parent').addEventListener('toggle',renderTable);
 $('next').onclick=newQ;
 
 function setGrade(n){DB.grade=n;save();$('g4').setAttribute('aria-pressed',n===4);$('g5').setAttribute('aria-pressed',n===5);
@@ -594,7 +703,7 @@ nameEl.value=DB.name||'';nameEl.addEventListener('input',()=>{DB.name=nameEl.val
 
 $('reset').onclick=()=>{$('confirmWrap').hidden=false};
 $('cancel').onclick=()=>{$('confirmWrap').hidden=true};
-$('confirm').onclick=()=>{DB['g'+DB.grade]={};save();$('confirmWrap').hidden=true;renderChips();newQ()};
+$('confirm').onclick=()=>{DB['g'+DB.grade]={};DB.log=(DB.log||[]).filter(e=>e.s!==DB.grade);DB.tests=(DB.tests||[]).filter(e=>e.s!==DB.grade);save();$('confirmWrap').hidden=true;renderChips();newQ()};
 
 setGrade(DB.grade===5?5:4);
 </script>

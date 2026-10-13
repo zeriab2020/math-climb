@@ -25,6 +25,7 @@
   --accent:#6d9fff; --accent-ink:#0e1520; --sun:#ffc23d; --good:#4fd39b; --good-bg:#14322a;
   --bad:#ff7d7d; --bad-bg:#3a1d22; --line:#2c3c55; color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
 .wrap{max-width:680px;margin:0 auto;padding:20px 16px 48px;display:flex;flex-direction:column;gap:16px}
 header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
@@ -139,6 +140,52 @@ th{color:var(--muted);font-weight:700;font-size:.78rem;text-transform:uppercase;
 .up{color:var(--good);font-weight:700}.down{color:var(--bad);font-weight:700}
 .repbtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .repbtns a{text-decoration:none}
+.modeseg{align-self:flex-start}
+.lessonbar{display:flex;flex-direction:column;gap:10px}
+.lessonbar .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+select{font:600 1rem var(--body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:6px 10px;max-width:100%;min-width:0}
+.steps{display:flex;gap:6px;flex-wrap:wrap;list-style:none;padding:0;margin:0}
+.steps li{font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--paper)}
+.steps li.now{border-color:var(--accent);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.steps li.did{background:var(--good-bg);color:var(--good);border-color:transparent}
+.lpane{display:flex;flex-direction:column;gap:14px}
+.lpane h2{font:800 1.4rem/1.15 var(--display);margin:0;text-wrap:balance}
+.lpane h3{font:800 1.05rem var(--display);margin:0}
+.lpane p{margin:0;max-width:65ch}
+.lpane ul{margin:0;padding-left:1.2em;max-width:65ch}
+.formula{font:500 1.15rem var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px;align-self:flex-start;overflow-x:auto;max-width:100%}
+.ex{border:1px dashed var(--accent);border-radius:12px;padding:12px 14px;background:var(--paper);display:flex;flex-direction:column;gap:6px}
+.ex b.tag{font:800 .78rem var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+.lpane table{border-collapse:collapse;font-variant-numeric:tabular-nums}
+.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.fact span:first-child{white-space:nowrap}
+.fact{display:flex;align-items:center;justify-content:space-between;gap:6px;font:500 1.05rem var(--mono);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:6px 8px}
+.fact input{width:4.6ch;font:500 1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:2px 4px;text-align:center}
+.fact.ok{border-color:var(--good);background:var(--good-bg)}
+.fact.no{border-color:var(--bad);background:var(--bad-bg)}
+.fact .fix{font-size:.8rem;color:var(--good);font-weight:700}
+.timer{font:800 2rem/1 var(--display);font-variant-numeric:tabular-nums;color:var(--accent)}
+.prow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hwnav{display:flex;flex-direction:column;gap:8px}
+.dots{display:flex;flex-wrap:wrap;gap:4px}
+.dots button{width:30px;height:28px;border-radius:6px;border:1px solid var(--line);background:var(--paper);font:600 .72rem var(--mono);color:var(--muted);cursor:pointer;padding:0}
+.dots button.has{background:var(--grid);color:var(--ink)}
+.dots button.cur{border-color:var(--accent);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.choice.sel{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.choice .wtxt{font:600 1rem/1.35 var(--body);text-align:left}
+.choice:has(.wtxt){flex:1 1 100%}
+.hwres{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:6px;width:100%}
+.hwres span{border-radius:8px;padding:6px 0;text-align:center;font:700 .85rem var(--mono)}
+.hwres .ok{background:var(--good-bg);color:var(--good)}
+.hwres .no{background:var(--bad-bg);color:var(--bad)}
+.q .qt{font:500 1rem var(--mono);border-collapse:collapse;margin-top:4px}
+.q .qt th,.q .qt td{border:1px solid var(--line);padding:4px 8px;text-align:center}
+.q .qt th{font:700 .85rem var(--body);color:var(--muted);text-transform:none;letter-spacing:0}
+.q .qwrap{overflow-x:auto;max-width:100%}
+.fig .pie{fill:var(--paper);stroke:var(--ink);stroke-width:2}
+.fig .pie.on{fill:var(--accent)}
+.fig .rul{fill:var(--paper);stroke:var(--ink);stroke-width:2}
+.fig .ptl{font:800 15px var(--body);fill:var(--accent)}
 #repText{width:100%;height:140px;font:12px var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px}
 @media (prefers-reduced-motion: no-preference){.pop{animation:pop .35s ease}@keyframes pop{0%{transform:scale(.96);opacity:.6}100%{transform:none;opacity:1}}}
 body{margin:0}
@@ -156,9 +203,16 @@ body{margin:0}
 
   <div class="who"><label for="name">Player</label><input id="name" maxlength="16" placeholder="Your name"></div>
 
+  <div class="seg modeseg" role="group" aria-label="Mode"><button id="mLesson" type="button" aria-pressed="true">Today's lesson</button><button id="mFree" type="button" aria-pressed="false">Free practice</button></div>
+
+  <div class="lessonbar" id="lessonBar" hidden>
+    <div class="row"><label for="lessonSel" class="how" style="margin:0">Lesson</label><select id="lessonSel"></select></div>
+    <ol class="steps" id="steps" aria-label="Lesson steps"></ol>
+  </div>
+
   <nav class="chips" id="chips" aria-label="Topic"></nav>
 
-  <section class="status" aria-live="polite">
+  <section class="status" id="statusSec" aria-live="polite">
     <div class="lvl-label" id="lvlLabel">Level 1</div>
     <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z"/></svg><span id="stars">0</span></div>
     <div class="ladder" id="ladder"></div>
@@ -181,14 +235,16 @@ body{margin:0}
       </form>
       <p class="tip" id="tip"></p>
       <div id="fb" hidden></div>
+      <div class="hwnav" id="hwNav" hidden><div class="prow"><button class="small" id="hwBack" type="button">← Back</button><span class="how" style="margin:0">Tap a number to jump to that problem.</span></div><div class="dots" id="hwDots"></div></div>
     </div>
     <div class="result" id="result" hidden></div>
+    <div class="lpane" id="lessonPane" hidden></div>
   </article>
 
   <details id="parent">
     <summary>Grown-up corner: progress report</summary>
     <div class="seg" role="group" aria-label="Question set"><button id="g4" aria-pressed="true">Set A</button><button id="g5" aria-pressed="false">Set B</button></div>
-    <p class="how">Questions follow the style of her school book's tests. Each topic has its own level from 1 to 10. Three first-try correct answers in a row move up one level. Two misses in a row move down one level. A wrong answer first shows a hint, then the worked solution. "Practice test" gives 20 mixed problems like a cumulative test and scores first-try answers.</p>
+    <p class="how">Questions follow the style of her school book's tests. Each topic has its own level from 1 to 10. Three first-try correct answers in a row move up one level. Two misses in a row move down one level. A wrong answer first shows a hint, then the worked solution. "Practice test" gives 20 mixed problems like a cumulative test and scores first-try answers. "Today's lesson" follows her school book's daily routine: Power Up (timed facts, count aloud, mental math a–h), New Concept, Lesson Practice, then 30 Written Practice problems that are checked at the end, followed by corrections.</p>
     <div class="rep" id="report"></div>
     <div class="reset"><button class="small" id="reset" type="button">Reset this set</button><span id="confirmWrap" hidden><button class="small warn" id="confirm" type="button">Yes, erase progress</button> <button class="small" id="cancel" type="button">Keep it</button></span></div>
   </details>
@@ -219,7 +275,7 @@ const KIDS=[['Joaquin','he'],['Maya','she'],['Omar','he'],['Lina','she'],['Sam',
 const kid=()=>{const [n,p]=pick(KIDS);return{n,p,P:Cap(p),his:p==='he'?'his':'her'}};
 
 function parse(s){
-  s=s.trim().replace(/,/g,'').replace(/\$/g,'').replace(/\s+/g,' ');
+  s=s.trim().replace(/,/g,'').replace(/[$¢]/g,'').replace(/\s+/g,' ');
   let m;
   if((m=s.match(/^(\d+) (\d+)\/(\d+)$/))){if(+m[3]===0)return null;return Q(+m[1]*+m[3]+ +m[2],+m[3])}
   if((m=s.match(/^(-?\d+)\/(\d+)$/))){if(+m[2]===0)return null;return Q(+m[1],+m[2])}
@@ -492,12 +548,199 @@ function numLine(L){
     steps:`Each small step is ${fmt(t)}. The arrow is ${k} steps after ${fmt(start)}, so it points to ${fmt(val)}.`};
 }
 
+// ---------- Saxon-style lessons: figures ----------
+function nlFig(o){ // integer units: a..b, tick, lab (label every), fmt, marks [{v,t}]
+  const x=v=>20+260*(v-o.a)/(o.b-o.a);
+  let s=`<svg viewBox="0 0 300 96" role="img" aria-label="Number line"><line class="nl" x1="8" y1="62" x2="292" y2="62"/><path class="nl" d="M14 56 L6 62 L14 68 M286 56 L294 62 L286 68" fill="none"/>`;
+  for(let v=o.a;v<=o.b;v+=o.tick){const big=(v-o.a)%o.lab===0;s+=`<line class="tick${big?' big':''}" x1="${f1(x(v))}" x2="${f1(x(v))}" y1="${big?52:56}" y2="${big?72:68}"/>`;if(big)s+=`<text x="${f1(x(v))}" y="90" text-anchor="middle">${o.fmt(v)}</text>`}
+  (o.marks||[]).forEach(m=>{const X=f1(x(m.v));s+=`<line class="arrow" x1="${X}" x2="${X}" y1="${m.t?22:14}" y2="${42}"/><path class="arrow" d="M${f1(X-5)} 40 L${X} 49 L${f1(+X+5)} 40 Z"/>`;if(m.t)s+=`<text class="ptl" x="${X}" y="16" text-anchor="middle">${m.t}</text>`});
+  return s+'</svg>';
+}
+function rulerFig(v,marks){ // v in quarter inches 0..16
+  const x=k=>24+k*17;let s=`<svg viewBox="0 0 320 100" role="img" aria-label="Inch ruler"><rect class="rul" x="8" y="34" width="304" height="58" rx="4"/>`;
+  for(let k=0;k<=16;k++){const len=k%4===0?26:k%2===0?18:11;s+=`<line class="tick${k%4===0?' big':''}" x1="${x(k)}" x2="${x(k)}" y1="34" y2="${34+len}"/>`;if(k%4===0&&k)s+=`<text x="${x(k)}" y="82" text-anchor="middle">${k/4}</text>`}
+  s+=`<text x="${x(0)+4}" y="82">inch</text>`;
+  (marks||[{v}]).forEach(m=>{const X=x(m.v);s+=`<line class="arrow" x1="${X}" x2="${X}" y1="${m.t?14:4}" y2="24"/><path class="arrow" d="M${X-5} 22 L${X} 31 L${X+5} 22 Z"/>`;if(m.t)s+=`<text class="ptl" x="${X}" y="11" text-anchor="middle">${m.t}</text>`});
+  return s+'</svg>';
+}
+function circlesFig(whole,num,den){
+  const n=whole+(num?1:0),w=n*58+6;let s=`<svg viewBox="0 0 ${w} 62" role="img" aria-label="Shaded circles">`;
+  for(let i=0;i<n;i++){const cx=32+i*58,cy=31,r=26;
+    if(i<whole){s+=`<circle class="pie on" cx="${cx}" cy="${cy}" r="${r}"/>`;continue}
+    for(let k=0;k<den;k++){const a0=-Math.PI/2+2*Math.PI*k/den,a1=-Math.PI/2+2*Math.PI*(k+1)/den;
+      s+=`<path class="pie${k<num?' on':''}" d="M${cx} ${cy} L${f1(cx+r*Math.cos(a0))} ${f1(cy+r*Math.sin(a0))} A${r} ${r} 0 0 1 ${f1(cx+r*Math.cos(a1))} ${f1(cy+r*Math.sin(a1))} Z"/>`}}
+  return s+'</svg>';
+}
+// ---------- words for numbers ----------
+function NW(n){if(n===0)return 'zero';const p=[];if(n>=1e6){p.push(W(Math.floor(n/1e6))+' million');n%=1e6}if(n>=1e3){p.push(W(Math.floor(n/1e3))+' thousand');n%=1e3}if(n)p.push(W(n));return p.join(', ')}
+const FW={2:['half','halves'],3:['third','thirds'],4:['fourth','fourths'],5:['fifth','fifths'],6:['sixth','sixths'],8:['eighth','eighths'],10:['tenth','tenths'],100:['hundredth','hundredths']};
+const fracWords=(n,d)=>W(n)+' '+FW[d][n===1?0:1];
+const mixShow=(top,den)=>{const r=Q(top,den);if(r.d===1)return String(r.n);const w=Math.floor(r.n/r.d),k=r.n%r.d;return w?`${w} ${k}/${r.d}`:`${k}/${r.d}`};
+const WT=s=>`<span class="wtxt">${s}</span>`;
+const PLACES=['ones','tens','hundreds','thousands','ten-thousands','hundred-thousands','millions','ten-millions','hundred-millions'];
+function bigNum(d){const a=[R(1,9)];for(let i=1;i<d;i++)a.push(Math.random()<.4?0:R(1,9));return +a.join('')}
+function swapNum(n){const s=String(n).split('');for(let t=0;t<20;t++){const i=R(0,s.length-2);if(s[i]!==s[i+1]&&!(i===0&&s[i+1]==='0')){[s[i],s[i+1]]=[s[i+1],s[i]];return +s.join('')}}return n+(n>1e6?1e5:1000)}
+const cmpChoice=(a,b,A,B,why)=>{const sign=A===B?'=':A>B?'&gt;':'&lt;';return {kind:'choice',ask:'Compare. Choose <, >, or =.',html:`${a} <span class="circ">◯</span> ${b}`,choices:['&lt;','&gt;','='],correct:['&lt;','&gt;','='].indexOf(sign),show:sign.replace('&gt;','>').replace('&lt;','<'),hint:why,steps:`${strip(a)} ${sign.replace('&gt;','>').replace('&lt;','<')} ${strip(b)}.`}};
+function bigWordsQ(n,L){
+  const t=pick(['toDigits','toWords','expanded','place','compare']);
+  if(t==='toDigits')return {ask:'Use digits to write this number.',html:NW(n),wordy:true,ans:Q(n),show:N(n),hint:'Write each group of three digits. Put a comma after the millions and after the thousands. Use zeros for empty places.',steps:`${NW(n)} = ${N(n)}.`};
+  if(t==='toWords'){const o=new Set([n]);o.add(swapNum(n));let k=0;while(o.size<3&&k++<20)o.add(n>=1e6?n+R(1,9)*1e5:n+R(1,9)*(n>=1e5?1e4:1e3));const arr=[...o];
+    return choiceQ(arr.map(v=>WT(NW(v))),0,{ask:`Which words name ${N(n)}?`,html:'',show:NW(n),hint:'Read the group before each comma, then say its name (million or thousand).',steps:`${N(n)} is read: ${NW(n)}.`})}
+  if(t==='expanded'){let s=String(n).split('').map(Number);let nz=s.map((d,i)=>d?i:-1).filter(i=>i>=0);while(nz.length>4){const k=pick(nz.slice(1));s[k]=0;nz=nz.filter(i=>i!==k)}n=+s.join('');
+    const parts=s.map((d,i)=>d*10**(s.length-1-i)).filter(v=>v);const bl=parts.map((v,i)=>`<input class="blank" data-i="${i}" inputmode="numeric" style="width:${String(v).length+2}ch" aria-label="Part ${i+1}">`).join(' + ');
+    return {kind:'blanks',ask:'Write this number in expanded form.',html:`${N(n)} = ${bl}`,ans:parts.map(v=>Q(v)),show:parts.join(' + '),txt:`Write ${N(n)} in expanded form.`,hint:'Write the value of each digit that is not zero, biggest place first.',steps:`${N(n)} = ${parts.map(N).join(' + ')}.`}}
+  if(t==='place'){const s=String(n);let i;do{i=R(0,s.length-1)}while(s[i]==='0');const pl=PLACES[s.length-1-i];
+    return {ask:`Which digit in ${N(n)} is in the ${pl} place?`,html:'',ans:Q(+s[i]),hint:'Start at the ones place on the right and name each place as you move left: ones, tens, hundreds, thousands, ten-thousands, hundred-thousands, millions…',steps:`In ${N(n)}, the ${pl} digit is ${s[i]}.`}}
+  const m=Math.random()<.2?n:swapNum(n);return cmpChoice(N(n),N(m),n,m,'Compare the digits from the left, one place at a time.');
+}
+// ---------- Saxon-style lessons: problem generators (one per lesson, level 1–10) ----------
+const LG={
+L31(L){
+  const lo=L<=2?10:L<=5?100:1000,hi=lo*10-1,k=kid(),k2=kid();
+  const t=pick(L>=4?['greater','story','points','eqn']:['greater','story','points']);
+  let a=R(lo+lo/2,hi),b=R(lo/2|0||5,a-3);
+  if(t==='greater'){const words=L<=3;const less=Math.random()<.4;
+    const A=words?Cap(W(a)):N(a),B=words?W(b):N(b);
+    return {html:less?`${Cap(words?W(b):N(b))} is how much less than ${words?W(a):N(a)}?`:`${A} is how much greater than ${B}?`,wordy:true,ask:'Comparing',ans:Q(a-b),hint:'Comparing means Larger − Smaller = Difference.',steps:`Larger − Smaller = Difference: ${N(a)} − ${N(b)} = ${N(a-b)}.`}}
+  if(t==='story'){const thing=pick(['shells','CDs','stickers','baseball cards','marbles','books']);const more=Math.random()<.5,firstBig=Math.random()<.5;
+    const s1=firstBig?`${k.n} has ${N(a)} ${thing}. ${k2.n} has ${N(b)} ${thing}.`:`${k2.n} has ${N(b)} ${thing}. ${k.n} has ${N(a)} ${thing}.`;
+    return {html:`${s1} How many ${more?'more':'fewer'} ${thing} does ${more?k.n:k2.n} have${more?` than ${k2.n}`:` than ${k.n}`}?`,wordy:true,ask:'Word problem',ans:Q(a-b),hint:'Nothing went away. This story compares two numbers. Use Larger − Smaller = Difference.',steps:`Larger − Smaller = Difference: ${N(a)} − ${N(b)} = ${N(a-b)} ${thing}.`}}
+  if(t==='points'){const cf=L<=3?[10,1]:L<=6?[25,5]:[100,10];const [lab,tk]=cf;const st0=lab*R(L<=3?0:1,L<=3?3:8);
+    const n=2*lab/tk;let i,j;do{i=R(1,n-1);j=R(1,n-1)}while(Math.abs(i-j)<2);const va=st0+Math.min(i,j)*tk,vb=st0+Math.max(i,j)*tk;const less=Math.random()<.4;
+    return {ask:less?'The number represented by point A is how much less than the number represented by point B?':'The number represented by point B is how much greater than the number represented by point A?',html:'',
+      fig:nlFig({a:st0,b:st0+2*lab,tick:tk,lab,fmt:N,marks:[{v:va,t:'A'},{v:vb,t:'B'}]}),note:`A at ${va}, B at ${vb}`,ans:Q(vb-va),hint:`First find the number at each point. Each small step is ${tk}. Then subtract: Larger − Smaller.`,steps:`A is ${N(va)} and B is ${N(vb)}. ${N(vb)} − ${N(va)} = ${N(vb-va)}.`}}
+  const thing=pick(['apples','pages','points','stamps']);
+  return choiceQ([`${N(a)} − ${N(b)} = d`,`${N(a)} + ${N(b)} = d`,`d − ${N(b)} = ${N(a)}`],0,{ask:'Which equation solves this problem?',html:`${k.n} scored ${N(a)} ${thing}. ${k2.n} scored ${N(b)} ${thing}. How many more ${thing} did ${k.n} score?`,wordy:true,show:`${N(a)} − ${N(b)} = d`,hint:'"How many more" compares two numbers. Larger − Smaller = Difference.',steps:`Larger − Smaller = Difference, so ${N(a)} − ${N(b)} = d, and d = ${N(a-b)}.`});
+},
+L32(L){
+  const big=L<=2?pick([9,10]):L<=5?pick([9,10,11]):pick([9,11,12,12]),b=R(L<=2?1:2,L<=2?10:12),p=big*b;
+  const hint=big===9?`For 9 × ${b}: the tens digit is one less than ${b}, and the two digits add up to 9.`:big===10?'Write the number and put a zero after it.':big===11?(b<=9?'11 times a one-digit number repeats the digit, like 11 × 4 = 44.':'11 × 10 = 110, 11 × 11 = 121, 11 × 12 = 132.'):`12 × ${b} is 10 × ${b} plus 2 × ${b}.`;
+  const steps=big===12?`10 × ${b} = ${10*b} and 2 × ${b} = ${2*b}. ${10*b} + ${2*b} = ${p}.`:`${big} × ${b} = ${p}.`;
+  if(L>=7&&Math.random()<.4)return {ask:'Find the missing number.',html:`${big} × <var>n</var> = ${p}`,ans:Q(b),hint:`Which number times ${big} makes ${p}?`,steps:`${big} × ${b} = ${p}, so n = ${b}.`};
+  return {ask:'Multiply.',html:Math.random()<.5?`${big} × ${b}`:`${b} × ${big}`,ans:Q(p),hint,steps};
+},
+L33(L){return bigWordsQ(bigNum(L<=2?4:L<=4?5:6),L)},
+L34(L){
+  if(Math.random()<.25){const vs=[R(1,9)*1e6,R(10,99)*1e3,R(100,999)*1e3];if(L>=6)vs.push(R(1,9)*1e6+R(100,999)*1e3);const three=shuffle(vs).slice(0,3);const sorted=three.slice().sort((x,y)=>x-y);
+    const nm=v=>v%1e6===0?`${v/1e6} million`:v%1e3===0&&v<1e6?`${v/1e3} thousand`:N(v);const ords=[sorted,[sorted[1],sorted[0],sorted[2]],[sorted[0],sorted[2],sorted[1]]];
+    return choiceQ(ords.map(o=>WT(o.map(nm).join(', '))),0,{ask:'Which list is in order from least to greatest?',html:three.map(nm).join(' &nbsp; '),show:sorted.map(nm).join(', '),hint:'Millions are bigger than thousands. Compare the place names first.',steps:`From least to greatest: ${sorted.map(nm).join(', ')}.`})}
+  return bigWordsQ(bigNum(L<=3?7:L<=6?8:9),L);
+},
+L35(L){
+  const t=pick(['pic','pic','cents','dollars','coins','mw','money']);
+  if(t==='pic'){const w=R(1,L<=4?2:3),den=pick(L<=3?[2,3,4]:[3,4,5,6,8]),num=R(1,den-1);
+    return {ask:'What mixed number is shown by the shaded circles?',html:'',fig:circlesFig(w,num,den),note:`${w} whole and ${num} of ${den} parts`,ans:Q(w*den+num,den),fr:true,show:`${w} ${num}/${den}`,hint:'Count the whole circles that are fully shaded. Then count the shaded parts of the last circle.',steps:`${w} whole circles and ${num}/${den} of another circle: ${w} ${num}/${den}.`}}
+  if(t==='cents'){const c=R(1,99);return {ask:`Write $0.${pad(c)} with a cent sign. How many cents is it?`,html:'',ans:Q(c),show:`${c}¢`,hint:'The two digits after the decimal point are the cents.',steps:`$0.${pad(c)} = ${c}¢.`}}
+  if(t==='dollars'){const c=R(1,99);return {ask:`Write ${c}¢ with a dollar sign and a decimal point.`,html:'',ans:Q(c,100),dec:true,money:true,show:`$0.${pad(c)}`,hint:'Always write two digits after the decimal point. 8¢ is $0.08.',steps:`${c}¢ = $0.${pad(c)}.`}}
+  if(t==='coins'){const q=R(0,L<=3?2:3),d=R(0,L<=3?2:4),n=R(0,2),p=R(L<=3?0:1,4);const v=25*q+10*d+5*n+p;if(!v)return LG.L35(L);
+    const list=[[q,'quarter'],[d,'dime'],[n,'nickel'],[p,'penn']].filter(x=>x[0]).map(([k,w])=>`${W(k)} ${w==='penn'?(k===1?'penny':'pennies'):w+(k>1?'s':'')}`);
+    return {ask:`Write the value of ${list.join(', ')} with a dollar sign.`,html:'',ans:Q(v,100),dec:true,money:true,show:`$${t2(v)}`,hint:'Quarter = 25¢, dime = 10¢, nickel = 5¢, penny = 1¢. Add them up.',steps:`${[q*25,d*10,n*5,p].filter(x=>x).join(' + ')} = ${v}¢ = $${t2(v)}.`}}
+  if(t==='mw'){const w=R(1,L<=4?9:20),den=pick([2,3,4,5,10,100]),num=R(1,den-1);const right=`${W(w)} and ${fracWords(num,den)}`;
+    const opts=[...new Set([right,`${W(num)} and ${W(w)} ${FW[den][1]}`,`${W(w)} and ${W(num)} ${FW[den===10?100:10][1]}`])];
+    return choiceQ(opts.map(WT),0,{ask:'Which words name this mixed number?',html:M(w,num,den),show:right,txt:`Words for ${w} ${num}/${den}`,hint:'Say the whole number, then "and," then the fraction.',steps:`${w} ${num}/${den} is read: ${right}.`})}
+  const dl=R(1,L<=4?20:99),c=Math.random()<.5?R(1,9):R(11,99);const dw=d=>`${W(d)} dollar${d>1?'s':''}`,cw=d=>`${W(d)} cent${d>1?'s':''}`;
+  const c2=c<10?c*10:c%10===0?c/10:+String(c).split('').reverse().join('');const right=`${dw(dl)} and ${cw(c)}`;
+  const opts=[...new Set([right,`${dw(dl)} and ${cw(c2)}`,`${dw(c)} and ${cw(dl)}`])];
+  return choiceQ(opts.map(WT),0,{ask:`Which words name $${dl}.${pad(c)}?`,html:'',show:right,hint:'Dollars come before the decimal point. The two digits after it are cents.',steps:`$${dl}.${pad(c)} is ${right}.`});
+},
+L36(L){
+  const C=[['penny','pennies',1],['nickel','nickels',5],['dime','dimes',10],['quarter','quarters',25],['half-dollar','half-dollars',50]];
+  const t=pick(L<=3?['frac','dol','many']:['frac','dol','many','cmp','mix']);const c=pick(C),k=R(1,Math.min(L<=3?4:9,Math.floor(100/c[2])));
+  const nm=k===1?c[0]:c[1];
+  if(t==='frac')return {ask:`${Cap(W(k))} ${nm} ${k===1?'is':'are'} what fraction of a dollar?`,html:'',ans:Q(k*c[2],100),fr:true,show:`${k*c[2]}/100${gcd(k*c[2],100)>1?` = ${Q(k*c[2],100).n}/${Q(k*c[2],100).d}`:''}`,hint:`A dollar is 100 cents. ${Cap(W(k))} ${nm} make ${k*c[2]}¢, so it is ${k*c[2]}/100 of a dollar.`,steps:`${k} × ${c[2]}¢ = ${k*c[2]}¢ = ${k*c[2]}/100 of a dollar${gcd(k*c[2],100)>1?` = ${Q(k*c[2],100).n}/${Q(k*c[2],100).d}`:''}.`};
+  if(t==='dol')return {ask:`Write the value of ${W(k)} ${nm} using a dollar sign and a decimal point.`,html:'',ans:Q(k*c[2],100),dec:true,money:true,show:`$${t2(k*c[2])}`,hint:`Each ${c[0]} is ${c[2]}¢.`,steps:`${k} × ${c[2]}¢ = ${k*c[2]}¢ = $${t2(k*c[2])}.`};
+  if(t==='many')return {ask:`How many ${c[1]} equal one dollar?`,html:'',ans:Q(100/c[2]),hint:`A dollar is 100¢. How many ${c[2]}¢ make 100¢?`,steps:`100 ÷ ${c[2]} = ${100/c[2]} ${c[1]}.`};
+  if(t==='cmp'){const ds=[2,4,10,20,100];const a=pick(ds);let b=pick(ds);if(Math.random()<.3)b=a;
+    if(Math.random()<.5)return cmpChoice(`${F(1,a)} of a dollar`,`${F(1,b)} of a dollar`,1/a,1/b,'Think in cents: 1/2 = 50¢, 1/4 = 25¢, 1/10 = 10¢, 1/20 = 5¢, 1/100 = 1¢.');
+    const m=pick([5,10,25,50]);return cmpChoice(`${F(1,a)} of a dollar`,`$${t2(m)}`,100/a,m,'Change the fraction of a dollar to cents first.')}
+  const q=R(1,3),d=R(1,4),v=25*q+10*d;
+  return {ask:`${Cap(W(q))} quarter${q>1?'s':''} and ${W(d)} dime${d>1?'s':''} are what fraction of a dollar?`,html:'',ans:Q(v,100),fr:true,show:`${v}/100`,hint:'Find the total cents. A dollar is 100 cents.',steps:`${q*25}¢ + ${d*10}¢ = ${v}¢ = ${v}/100 of a dollar.`};
+},
+L37(L){
+  const den=L<=2?pick([2,4]):L<=4?pick([2,3,4]):L<=7?pick([3,4,5,6]):pick([4,8,10]);const s=L<=5?0:R(1,30);
+  let k;do{k=R(1,3*den-1)}while(k%den===0);const top=s*den+k;
+  return {ask:k<den&&s===0?'To what fraction is the arrow pointing?':'To what mixed number is the arrow pointing?',html:'',fig:nlFig({a:s*den,b:(s+3)*den,tick:1,lab:den,fmt:v=>v/den,marks:[{v:top}]}),note:`whole numbers ${s} to ${s+3}, arrow at ${mixShow(top,den)}`,
+    ans:Q(top,den),fr:true,show:mixShow(top,den),hint:`Count the spaces between two whole numbers. There are ${den}, so each space is 1/${den}.`,steps:`Each space is 1/${den}. The arrow is ${k%den} space${k%den>1?'s':''} past ${s+Math.floor(k/den)}, so it points to ${mixShow(top,den)}.`};
+},
+L38(L){
+  const MG=[[3,4],[3,6],[3,7],[3,8],[4,6],[4,7],[4,8],[6,7],[6,8],[7,8]];let [a,b]=L>=4&&Math.random()<.25?pick([[11,11],[12,12],[12,R(3,9)]]):pick(MG);if(Math.random()<.5)[a,b]=[b,a];
+  if(L>=6&&Math.random()<.4)return {ask:'Find the missing number.',html:`${a} × <var>m</var> = ${a*b}`,ans:Q(b),hint:`Which memory-group fact has ${a} and makes ${a*b}?`,steps:`${a} × ${b} = ${a*b}, so m = ${b}.`};
+  return {ask:'Multiply. (Memory group)',html:`${a} × ${b}`,ans:Q(a*b),hint:'This is a memory-group fact. Say the fact aloud, or build it from one you know: 7 × 8 is 7 × 4 doubled.',steps:`${a} × ${b} = ${a*b}.`};
+},
+L39(L){
+  if(L>=6&&Math.random()<.35){const a=R(2,10),b=R(1,6);const tot=a+b;if(tot>16)return LG.L39(L);
+    return {ask:`Point A to point B is ${mixShow(a,4)} in. Point B to point C is ${mixShow(b,4)} in. How far is it from A to C?`,html:'',ans:Q(tot,4),fr:true,show:`${mixShow(tot,4)} in.`,hint:'Add the two lengths. Two fourths make one half, and four fourths make one inch.',steps:`${mixShow(a,4)} + ${mixShow(b,4)} = ${mixShow(tot,4)} in.`}}
+  if(L>=3&&Math.random()<.2)return {ask:'Fill in the missing number.',html:`${F(2,4)} = ${F('?',2)}`,ans:Q(1),hint:'Two fourths is the same as one half. Look at the half-inch mark on a ruler.',steps:'2/4 = 1/2.'};
+  let v;do{v=R(1,15)}while(v%4===0||(L<=2&&v%2))
+  return {ask:'To what point on this inch ruler is the arrow pointing?',html:'',fig:rulerFig(v),note:`arrow at ${mixShow(v,4)} in.`,ans:Q(v,4),fr:true,show:`${mixShow(v,4)} in.`,hint:'The long marks are whole inches. The middle mark is 1/2 inch. The short marks are 1/4 and 3/4.',steps:`The arrow is ${v%4} fourth${v%4>1?'s':''} past ${Math.floor(v/4)}, which is ${mixShow(v,4)} inches.`};
+},
+L40(L){
+  const C=[['gallon','gallons','quarts',4],['quart','quarts','pints',2],['pint','pints','cups',2],['cup','cups','ounces',8],['liter','liters','milliliters',1000]];
+  const C2=[['gallon','gallons','pints',8],['quart','quarts','cups',4],['pint','pints','ounces',16],['gallon','gallons','cups',16]];
+  const t=pick(L>=3?['conv','conv','table','which','back']:['conv','conv','which']);
+  if(t==='table'){const f=pick([[1,'Gallons','Quarts',4],[1,'Quarts','Pints',2],[1,'Pints','Cups',2],[1,'Cups','Ounces',8]]);const cols=6,hide=[3,4,5].slice(0,L>=6?3:2);
+    const cells=k=>`<td>${hide.includes(k)?`<input class="blank" inputmode="numeric" style="width:4ch" aria-label="${f[2]} for ${k+1}">`:(k+1)*f[3]}</td>`;
+    return {kind:'blanks',ask:`Complete the table that shows ${f[1].toLowerCase()} and ${f[2].toLowerCase()}.`,html:`<div class="qwrap"><table class="qt"><tr><th>${f[1]}</th>${Array.from({length:cols},(_,k)=>`<td>${k+1}</td>`).join('')}</tr><tr><th>${f[2]}</th>${Array.from({length:cols},(_,k)=>cells(k)).join('')}</tr></table></div>`,
+      ans:hide.map(k=>Q((k+1)*f[3])),show:hide.map(k=>(k+1)*f[3]).join(', '),txt:`Table: ${f[1]} to ${f[2]} (×${f[3]}), fill in for ${hide.map(k=>k+1).join(', ')}.`,hint:`Each ${f[1].toLowerCase().replace(/s$/,'')} is ${f[3]} ${f[2].toLowerCase()}. Count by ${f[3]}s.`,steps:`Multiply by ${f[3]}: ${hide.map(k=>`${k+1} → ${(k+1)*f[3]}`).join(', ')}.`}}
+  if(t==='which'){const p=pick([['1 quart','1 liter',1],['1 cup','1 pint',1],['1 gallon','3 quarts',0],['2 pints','1 gallon',1],['1 liter','500 milliliters',0]]);
+    return choiceQ([p[p[2]],p[1-p[2]]].map(WT),0,{ask:`Which holds more: ${p[0]} or ${p[1]}?`,html:'',show:p[p[2]],hint:'Use the facts: 2 cups = 1 pint, 2 pints = 1 quart, 4 quarts = 1 gallon, 1 liter = 1000 mL and is a little more than a quart.',steps:`${p[p[2]]} holds more.`})}
+  const c=pick(L<=3?C:L<=6?C.concat(C2):C2.concat(C)),k=c[4]===1000?R(1,L<=5?5:9):R(2,L<=3?5:L<=6?9:12);
+  if(t==='back'){return {ask:`${N(k*c[3])} ${c[2]} is how many ${c[1]}?`,html:'',ans:Q(k),hint:`Every ${c[3]} ${c[2]} make 1 ${c[0]}. Divide by ${c[3]}.`,steps:`${N(k*c[3])} ÷ ${c[3]} = ${k} ${c[1]}.`}}
+  return {ask:`${Cap(W(k))} ${k===1?c[0]:c[1]} ${k===1?'is':'are'} how many ${c[2]}?`,html:'',ans:Q(k*c[3]),hint:`1 ${c[0]} = ${N(c[3])} ${c[2]}. Multiply by ${k}.`,steps:`${k} × ${N(c[3])} = ${N(k*c[3])} ${c[2]}.`};
+}};
+// ---------- Power Up ----------
+const FACTS={
+ A:{name:'Addition facts',gen:()=>{const a=R(0,9),b=R(0,9);return [`${a} + ${b}`,a+b]}},
+ B:{name:'Subtraction facts',gen:()=>{const a=R(0,9),b=R(0,9);return [`${a+b} − ${b}`,a]}},
+ C:{name:'Multiplication facts',gen:()=>{let a=R(0,9),b=R(0,5);if(Math.random()<.5)[a,b]=[b,a];return [`${a} × ${b}`,a*b]}},
+ D:{name:'Multiplication facts',gen:()=>{const a=R(2,10),b=R(2,10);return [`${a} × ${b}`,a*b]}},
+ E:{name:'Multiplication facts',gen:()=>{const a=R(2,12),b=R(2,12);return [`${a} × ${b}`,a*b]}}};
+const MM={
+ split(){const a=R(2,8)*10+R(5,9),need=10-a%10,b=R(need+1,9);return {ask:'Number Sense: Split the second number to add.',html:`${a} + ${b}`,ans:Q(a+b),hint:`Split ${b} into ${need} + ${b-need}. ${a} + ${need} = ${a+need}.`,steps:`${a} + ${need} = ${a+need}, then ${a+need} + ${b-need} = ${a+b}.`}},
+ tens(){if(Math.random()<.5){const a=R(3,9)*100+R(1,9)*10,h=R(1,Math.floor(a/100)-1)*100,t=Math.random()<.5?R(0,(a%100)/10)*10:0,b=h+t;return {ask:'Number Sense',html:`${a} − ${b}`,ans:Q(a-b),hint:'Subtract the hundreds, then the tens.',steps:`${a} − ${b} = ${a-b}.`}}
+   const a=R(41,99),b=R(1,Math.floor(a/10)-1)*10;return {ask:'Number Sense',html:`${a} − ${b}`,ans:Q(a-b),hint:'Only the tens digit changes.',steps:`${a} − ${b} = ${a-b}.`}},
+ three(){const xs=Math.random()<.5?[R(21,89),pick([9,19,29,8,18]),R(1,5)*100]:[R(1,9)*100+R(1,9)*10,R(11,49),R(1,3)*100+R(11,49)];const s=xs.reduce((a,b)=>a+b,0);
+   return {ask:'Number Sense',html:xs.join(' + '),ans:Q(s),hint:'Add the easiest numbers first. Adding 19 is the same as adding 20 and taking away 1.',steps:`${xs.join(' + ')} = ${s}.`}},
+ timeAdd(){const k=kid(),h=R(1,11),m=5*R(0,11),ap=pick(['a.m.','p.m.']),add=R(2,10);const H=(h%12)+(ap==='p.m.'?12:0),T=(H*60+m+add*60)%1440,H2=Math.floor(T/60),h2=H2%12||12,ap2=H2<12?'a.m.':'p.m.';
+   return {kind:'time',ask:`Time: ${k.n} left at ${h}:${pad(m)} ${ap}. The trip takes ${add} hours. At what time will ${k.p} arrive?`,html:'',h:h2,m,ap:ap2,show:`${h2}:${pad(m)} ${ap2}`,hint:'Count forward one hour at a time. After 11:59 a.m. it becomes p.m.',steps:`${h}:${pad(m)} ${ap} + ${add} hours = ${h2}:${pad(m)} ${ap2}.`}},
+ timeSub(){const k=kid(),h=R(8,10),m=pick([0,15,30,45]),len=R(2,3),h2=h-len;return {kind:'time',ask:`Time: ${k.n} goes to bed at ${h}:${pad(m)} p.m. A movie lasts ${len} hours. At what time must ${k.p} start the movie to finish by bedtime?`,html:'',h:h2,m,ap:'p.m.',show:`${h2}:${pad(m)} p.m.`,hint:`Count back ${len} hours from ${h}:${pad(m)}.`,steps:`${h}:${pad(m)} p.m. − ${len} hours = ${h2}:${pad(m)} p.m.`}},
+ until(){const h=R(1,11),m=5*R(1,11);return {ask:`Time: It is ${h}:${pad(m)}. How many minutes is it until ${h+1}:00?`,html:'',ans:Q(60-m),hint:'An hour has 60 minutes. Count up from the minutes to 60.',steps:`60 − ${m} = ${60-m} minutes.`}},
+ measure(){const c=pick([['yards','feet',3],['feet','inches',12],['kilometers','meters',1000],['minutes','seconds',60],['meters','centimeters',100],['hours','minutes',60],['days','hours',24]]),k=R(2,c[2]===1000?9:6);
+   return {ask:`Measurement: ${Cap(W(k))} ${c[0]} is how many ${c[1]}?`,html:'',ans:Q(k*c[2]),hint:`1 ${c[0].replace(/s$/,'').replace('fee','foo')} = ${c[2]} ${c[1]}.`,steps:`${k} × ${c[2]} = ${N(k*c[2])} ${c[1]}.`}},
+ mile(){return {ask:'Measurement: One mile is how many feet?',html:'',ans:Q(5280),hint:'This is a fact to remember: a mile is five thousand, two hundred eighty feet.',steps:'1 mile = 5280 feet.'}},
+ perim(){const s=R(2,12),u=pick(['inches','feet','cm']);return {ask:`Geometry: A square is ${s} ${u} on each side. What is its perimeter?`,html:'',ans:Q(4*s),hint:'A square has 4 equal sides.',steps:`4 × ${s} = ${4*s} ${u}.`}},
+ sides(){const k=R(2,6),sh=pick([['triangles',3],['squares',4],['pentagons',5],['hexagons',6]]);return {ask:`Geometry: Altogether, how many sides do ${W(k)} ${sh[0]} have?`,html:'',ans:Q(k*sh[1]),hint:`Each one has ${sh[1]} sides.`,steps:`${k} × ${sh[1]} = ${k*sh[1]} sides.`}},
+ moneyAdd(){const a=R(100,999),b=pick([100,200,300]);return {ask:'Money',html:`$${t2(a)} + $${t2(b)}`,ans:Q(a+b,100),dec:true,money:true,show:`$${t2(a+b)}`,hint:'Only the dollars change.',steps:`$${t2(a)} + $${t2(b)} = $${t2(a+b)}.`}},
+ money99(){const a=R(100,999),b=pick([99,98,95]);return {ask:'Money: Add $1.00, then take away a few cents.',html:`$${t2(a)} + $0.${b}`,ans:Q(a+b,100),dec:true,money:true,show:`$${t2(a+b)}`,hint:`$0.${b} is ${100-b}¢ less than $1.00. Add $1.00, then subtract ${100-b}¢.`,steps:`$${t2(a)} + $1.00 = $${t2(a+100)}, then − ${100-b}¢ = $${t2(a+b)}.`}},
+ moneySub(){const k=kid(),a=R(4,9)*5+R(0,1)*5,b=R(1,Math.floor(a/5)-1)*5;return {ask:`Money: ${k.n} had $${a}. ${k.P} spent $${b}. How much money does ${k.p} have left?`,html:'',ans:Q(a-b),money:true,show:`$${a-b}`,hint:'Some went away: subtract.',steps:`$${a} − $${b} = $${a-b}.`}},
+ money3(){const xs=[R(10,150),R(10,99),R(10,60)];const s=xs.reduce((a,b)=>a+b,0);return {ask:`Money: A bank account has $${xs[0]}, another has $${xs[1]}, and another has $${xs[2]}. How much money is that altogether?`,html:'',ans:Q(s),money:true,show:`$${s}`,hint:'Add the three amounts.',steps:`$${xs.join(' + $')} = $${s}.`}},
+ est25(){const v=R(101,2499),r=Math.round(v/25)*25;return {ask:`Estimation: Round $${t2(v)} to the nearest 25 cents.`,html:'',ans:Q(r,100),dec:true,money:true,show:`$${t2(r)}`,hint:'Amounts to the nearest 25 cents end in .00, .25, .50, or .75. Which one is closest?',steps:`$${t2(v)} is closest to $${t2(r)}.`}},
+ est10(){const n=R(101,999),u=pick(['inches','centimeters','millimeters']);return {ask:`Estimation: Round ${n} ${u} to the nearest ten ${u}.`,html:'',ans:Q(Math.round(n/10)*10),hint:'Look at the ones digit. 5 or more rounds up.',steps:`${n} rounds to ${Math.round(n/10)*10}.`}},
+ calc(){const a=R(2,6),b=R(2,6);let v=a*b;const ops=[];for(let i=0;i<3;i++){const k=R(2,10);if(Math.random()<.5&&v-k>=0){ops.push(`− ${k}`);v-=k}else{ops.push(`+ ${k}`);v+=k}}
+   return {ask:'Calculation: Do each step in order.',html:`${a} × ${b}, ${ops.join(', ')}`,ans:Q(v),hint:'Do each step in order, from left to right. Keep the answer in your head as you go.',steps:`${a} × ${b} = ${a*b}, then ${ops.join(', then ')} → ${v}.`}},
+ diff(){const hi=R(25,40),lo=R(10,hi-3);return {ask:`Measurement: The high temperature was ${hi}°C. The low temperature was ${lo}°C. How many degrees apart are they?`,html:'',ans:Q(hi-lo),hint:'Compare: Larger − Smaller = Difference.',steps:`${hi} − ${lo} = ${hi-lo} degrees.`}}
+};
+function countQ(c){
+  const [step,a,b,dir]=c;let seq=[];const lo=Math.min(a,b),hi=Math.max(a,b);for(let v=lo;v<=hi;v+=step)seq.push(v);
+  let down=dir==='down'||(dir==='both'&&Math.random()<.5);if(down)seq.reverse();
+  const len=Math.min(8,seq.length),off=R(0,seq.length-len),terms=seq.slice(off,off+len);const pos=shuffle([...Array(len-1).keys()].map(i=>i+1)).slice(0,3).sort((x,y)=>x-y);
+  let bi=0;const html=terms.map((t,i)=>pos.includes(i)?`<input class="blank" data-i="${bi++}" inputmode="numeric" aria-label="Blank ${bi}">`:N(t)).join(', ');
+  return {kind:'blanks',topic:'count',ask:`Count ${down?'down ':''}by ${W(step)}s. Fill in the missing numbers.`,html,ans:pos.map(i=>Q(terms[i])),show:pos.map(i=>terms[i]).join(', '),
+    txt:`Count ${down?'down ':''}by ${step}s: ${terms.map((t,i)=>pos.includes(i)?'__':t).join(', ')}`,hint:`Each number is ${step} ${down?'less':'more'} than the one before it.`,steps:`${terms.join(', ')}`};
+}
+
 // ---------- topics & state ----------
 const TOPICS=[
   {id:'mix',name:'Practice test'},{id:'word',name:'Word problems'},{id:'add',name:'Add & subtract'},{id:'missing',name:'Missing numbers'},
   {id:'seq',name:'Patterns & even/odd'},{id:'compare',name:'Compare < > ='},{id:'round',name:'Number lines & rounding'},{id:'time',name:'Telling time'},
   {id:'geo',name:'Measuring & perimeter'},{id:'angles',name:'Angles & shapes'},{id:'frac',name:'Fractions'},
-  {id:'mult',name:'Multiply'},{id:'div',name:'Divide'},{id:'dec',name:'Decimals'},{id:'ops',name:'Order of operations',g5:true}];
+  {id:'mult',name:'Multiply'},{id:'div',name:'Divide'},{id:'dec',name:'Decimals'},{id:'ops',name:'Order of operations',g5:true},
+  {id:'mental',name:'Mental math',hidden:true},{id:'count',name:'Counting patterns',hidden:true},
+  {id:'L31',name:'Lesson 31: Comparing word problems',hidden:true},{id:'L32',name:'Lesson 32: 9s, 10s, 11s, 12s facts',hidden:true},
+  {id:'L33',name:'Lesson 33: Numbers to hundred thousands',hidden:true},{id:'L34',name:'Lesson 34: Numbers to hundred millions',hidden:true},
+  {id:'L35',name:'Lesson 35: Mixed numbers and money',hidden:true},{id:'L36',name:'Lesson 36: Fractions of a dollar',hidden:true},
+  {id:'L37',name:'Lesson 37: Fractions on a number line',hidden:true},{id:'L38',name:'Lesson 38: Memory group facts',hidden:true},
+  {id:'L39',name:'Lesson 39: Inch ruler to the nearest fourth',hidden:true},{id:'L40',name:'Lesson 40: Capacity',hidden:true}];
 // Practice test mix, weighted like a Saxon cumulative test
 const TEST_POOL={4:['word','word','word','add','add','missing','missing','seq','compare','round','round','time','geo','geo','angles','frac','mult','div'],
                  5:['word','word','word','add','missing','missing','seq','compare','round','time','geo','geo','angles','frac','frac','mult','div','dec','dec','ops']};
@@ -507,7 +750,8 @@ let DB={grade:4,name:'',g4:{},g5:{}};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)DB=Object.assign(DB,s)}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}};
 const G=()=>{const k='g'+DB.grade;DB[k]=DB[k]||{};const g=DB[k];g.topic=g.topic||'mix';g.lv=g.lv||{};g.st=g.st||{};g.stars=g.stars||0;g.n=g.n||0;g.test=g.test||{i:0,score:0,missed:{}};return g};
-const topicsFor=()=>TOPICS.filter(t=>!t.g5||DB.grade===5);
+const topicsFor=()=>TOPICS.filter(t=>!t.hidden&&(!t.g5||DB.grade===5));
+const allTopics=()=>TOPICS.filter(t=>t.id!=='mix'&&(!t.g5||DB.grade===5));
 const tname=id=>TOPICS.find(t=>t.id===id).name;
 const lv=id=>G().lv[id]||1;
 const st=id=>{const s=G().st;return s[id]=s[id]||{seen:0,first:0,run:0,miss:0}};
@@ -530,20 +774,21 @@ function renderStatus(){
 // ---------- progress tracking ----------
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const strip=s=>{const d=document.createElement('div');d.innerHTML=s||'';d.querySelectorAll('.fr').forEach(f=>f.replaceWith(f.children[0].textContent+'/'+f.children[1].textContent));return d.textContent.replace(/\s+/g,' ').trim()};
-function plainQ(){
-  const tmp=$('q').cloneNode(true);
+function plainQ(q){
+  if(q.txt)return q.txt;
+  const tmp=document.createElement('div');tmp.innerHTML=q.html||'';
   tmp.querySelectorAll('.fr').forEach(f=>f.replaceWith(f.children[0].textContent+'/'+f.children[1].textContent));
   tmp.querySelectorAll('.vert').forEach(v=>{const p=[...v.children].map(c=>c.textContent.replace(/ /g,'').trim());v.replaceWith(p[2]?`${p[0]} ${p[1]} = ${p[2]}`:`${p[0]} ${p[1]}`)});
   tmp.querySelectorAll('input').forEach(i=>i.replaceWith('__'));
   const body=tmp.textContent.replace(/\s+/g,' ').trim();
-  return ((cur.wordy?'':(cur.ask||''))+(body?' '+body:'')+(cur.fig?` (${cur.note||'picture'})`:'')).trim();
+  return ((q.wordy?'':(q.ask||''))+(body?' '+body:'')+(q.fig?` (${q.note||'picture'})`:'')).trim();
 }
 const choiceText=i=>strip(cur.choices[i])||('choice '+'ABCD'[i]);
 const inputText=()=>cur.kind==='blanks'?[...$('q').querySelectorAll('.blank')].map(i=>i.value.trim()).join(', '):$('ans').value.trim();
 function logIt(outcome){
   DB.log=DB.log||[];
   DB.log.push({t:Date.now(),s:DB.grade,p:cur.topic,l:cur.lv,r:outcome,q:cur.text,a:cur.answers.slice(0,2),c:strip(answerText()),
-    k:strip(cur.hint).split(/(?<=\.)\s/)[0].replace(/\d[\d,.]*/g,'#').slice(0,120),dt:Math.min(Date.now()-cur.t0,300000),x:G().topic==='mix'?1:0});
+    k:strip(cur.hint).split(/(?<=\.)\s/)[0].replace(/\d[\d,.]*/g,'#').slice(0,120),dt:Math.min(Date.now()-cur.t0,300000),x:LS.on?'Lesson '+LS.r().n:(G().topic==='mix'?1:0)});
   if(DB.log.length>2000)DB.log=DB.log.slice(-2000);
 }
 const D=864e5;
@@ -554,7 +799,7 @@ const mins=a=>Math.round(a.reduce((s,e)=>s+(e.dt||0),0)/6e4);
 function stats(){
   const now=Date.now(),L=(DB.log||[]).filter(e=>e.s===DB.grade);
   const tw=L.filter(e=>now-e.t<7*D),lw=L.filter(e=>now-e.t>=7*D&&now-e.t<14*D);
-  const topics=topicsFor().filter(t=>t.id!=='mix').map(t=>{
+  const topics=allTopics().map(t=>{
     const a=L.filter(e=>e.p===t.id),rec=a.slice(-20),prev=a.slice(-40,-20);
     let drops=0;for(let i=1;i<rec.length;i++)if(rec[i].l<rec[i-1].l)drops++;
     const bad=rec.filter(e=>e.r!=='first'),kinds={};bad.forEach(e=>{(kinds[e.k]=kinds[e.k]||[]).push(e)});
@@ -575,6 +820,8 @@ function reportText(S){
   if(S.weak.length)S.weak.forEach(t=>{lines.push(`- ${t.name}: ${t.acc}% first try, level ${t.lv}${t.drops?`, dropped a level ${t.drops}x`:''}`);t.kinds.forEach(([k,a])=>lines.push(`    missed ${a.length}x, e.g. "${a[a.length-1].q}" (answered ${a[a.length-1].a[0]||'-'}, correct ${a[a.length-1].c})`))});
   else lines.push('- Nothing stands out yet.');
   lines.push('','DOING WELL:',...(S.strong.length?S.strong.map(t=>`- ${t.name}: ${t.acc}% first try, level ${t.lv}`):['- Not enough practice yet to tell.']));
+  const LL=(DB.lessonLog||[]).filter(x=>x.s===DB.grade).slice(-5).reverse();
+  if(LL.length)lines.push('','LESSONS:',...LL.map(x=>`- ${fmtD(x.t)} Lesson ${x.n}: facts ${x.facts?x.facts.r+'/30 in '+fmtS(x.facts.s):'-'}, written practice ${x.written?x.written.r+'/30':'-'}, fixed ${x.fixed?x.fixed.r+'/'+x.fixed.t:'-'}`));
   if(S.tests.length)lines.push('','PRACTICE TESTS:',...S.tests.map(x=>`- ${fmtD(x.t)}: ${x.score} / ${TEST_LEN}`));
   return lines.join('\n');
 }
@@ -594,7 +841,8 @@ function renderTable(){
   const trend=t=>t.prev==null||t.acc==null?'':t.acc-t.prev>=10?'<span class="up">▲</span>':t.prev-t.acc>=10?'<span class="down">▼</span>':'';
   const rows=S.topics.filter(t=>t.n).sort((a,b)=>(a.acc??101)-(b.acc??101)).map(t=>`<tr><td>${t.name}</td><td>${t.lv}</td><td>${t.n}</td><td>${t.acc??'–'}% ${trend(t)}</td><td>${fmtD(t.last)}</td></tr>`).join('');
   const out=r=>r==='second'?'Fixed on 2nd try':'Missed';
-  const mis=S.mistakes.map(e=>`<div class="miss"><div class="meta">${fmtD(e.t)} · ${esc(tname(e.p))} · level ${e.l} · ${out(e.r)}${e.x?' · practice test':''}</div>${esc(e.q)}<br>She answered <span class="bad">${esc(e.a[0]||'–')}</span>${e.a[1]?`, then ${esc(e.a[1])}`:''}. Correct: <span class="good">${esc(e.c)}</span></div>`).join('');
+  const LL=(DB.lessonLog||[]).filter(x=>x.s===DB.grade).slice(-8).reverse(),fx=x=>x&&x.t?`${x.r}/${x.t}`:'–';
+  const mis=S.mistakes.map(e=>`<div class="miss"><div class="meta">${fmtD(e.t)} · ${esc(tname(e.p))} · level ${e.l} · ${out(e.r)}${e.x===1?' · practice test':typeof e.x==='string'?' · '+esc(e.x):''}</div>${esc(e.q)}<br>She answered <span class="bad">${esc(e.a[0]||'–')}</span>${e.a[1]?`, then ${esc(e.a[1])}`:''}. Correct: <span class="good">${esc(e.c)}</span></div>`).join('');
   r.innerHTML=`<div class="kpis">${kpis.map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('')}</div>
     <section><h3>Needs help with</h3>${weak}</section>
     <section><h3>Doing well</h3>${strong}</section>
@@ -602,6 +850,7 @@ function renderTable(){
       <div class="legend"><span><i style="background:var(--good)"></i>Right first try</span><span><i style="background:var(--sun)"></i>Right on 2nd try</span><span><i style="background:var(--bad)"></i>Missed</span></div></section>
     <section><h3>By topic</h3><div class="tbl"><table><thead><tr><th>Topic</th><th>Level</th><th>Answered</th><th>First try (last 20)</th><th>Last practiced</th></tr></thead><tbody>${rows}</tbody></table></div></section>
     ${S.tests.length?`<section><h3>Practice tests</h3><div class="tbl"><table><tbody>${S.tests.map(x=>`<tr><td>${fmtD(x.t)}</td><td>${x.score} / ${TEST_LEN}</td><td>${Object.keys(x.missed).map(tname).join(', ')||'No misses'}</td></tr>`).join('')}</tbody></table></div></section>`:''}
+    ${LL.length?`<section><h3>Lessons</h3><div class="tbl"><table><thead><tr><th>Date</th><th>Lesson</th><th>Facts</th><th>Mental math</th><th>Lesson Practice</th><th>Written Practice</th><th>Fixed</th></tr></thead><tbody>${LL.map(x=>`<tr><td>${fmtD(x.t)}</td><td>${x.n}</td><td>${x.facts?`${x.facts.r}/30 · ${fmtS(x.facts.s)}`:'–'}</td><td>${fx(x.mental)}</td><td>${fx(x.practice)}</td><td>${fx(x.written)}</td><td>${fx(x.fixed)}</td></tr>`).join('')}</tbody></table></div></section>`:''}
     <section><h3>Recent mistakes</h3>${mis||'<p class="how" style="margin:0">No mistakes yet.</p>'}</section>
     <section><h3>Send this report</h3><div class="repbtns"><button class="small" id="repCopy" type="button">Copy report</button><a class="small" id="repMail" href="#">Email report</a>${navigator.share?'<button class="small" id="repShare" type="button">Share…</button>':''}<span id="repMsg" class="how" style="margin:0"></span></div>
       <textarea id="repText" readonly hidden></textarea></section>`;
@@ -611,29 +860,35 @@ function renderTable(){
     if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>$('repMsg').textContent='Copied.',fb);else fb()};
   if($('repShare'))$('repShare').onclick=()=>navigator.share({title:'Math Climb progress report',text:txt}).catch(()=>{});
 }
-function newQ(){
-  const g=G();$('result').hidden=true;$('qbox').hidden=false;
-  const testing=g.topic==='mix';
-  if(testing&&g.test.i>=TEST_LEN){showResult();return}
-  const id=testing?pick(TEST_POOL[DB.grade]):g.topic;
-  const q=GEN[id](lv(id),DB.grade);q.topic=id;q.kind=q.kind||'num';q.lv=lv(id);q.t0=Date.now();q.answers=[];cur=q;tries=0;done=false;
-  $('qTopic').textContent=testing?`Practice test · ${tname(id)}`:tname(id);
-  $('qNum').textContent=testing?`Problem ${g.test.i+1} of ${TEST_LEN}`:`Problem ${g.n+1}`;
+function mk(id){const q=(GEN[id]||LG[id])(lv(id),DB.grade);q.topic=id;q.kind=q.kind||'num';q.lv=lv(id);q.answers=[];q.text=plainQ(q);return q}
+const tipFor=q=>q.kind==='choice'?'Tap your answer.':q.kind==='blanks'?'Fill in every blank, then press Check.':q.kind==='time'?'Write the time like 4:35.':q.money?'Type it like $0.75.':q.fr?'Type a fraction like 3/4 or a mixed number like 1 1/2.':q.dec?'Type a decimal like 2.75.':'Type a number.';
+function renderQ(q,top,num){
+  cur=q;tries=0;done=false;q.answers=q.answers||[];q.t0=Date.now();if(!q.text)q.text=plainQ(q);
+  $('result').hidden=true;$('lessonPane').hidden=true;$('qbox').hidden=false;$('hwNav').hidden=true;
+  $('qTopic').textContent=top;$('qNum').textContent=num;
   $('ask').textContent=q.ask||'Solve.';
   const qe=$('q');qe.className='q'+(q.wordy?' wordy':'');qe.innerHTML=q.html||'';
   const fig=$('fig');fig.hidden=!q.fig;fig.innerHTML=q.fig||'';
-  q.text=plainQ();
   const ch=$('choices');ch.hidden=q.kind!=='choice';ch.innerHTML='';
-  if(q.kind==='choice')q.choices.forEach((h,i)=>{const b=document.createElement('button');b.type='button';b.className='choice';b.innerHTML=`<span class="lt">${'ABCD'[i]}.</span>${h}`;b.onclick=()=>{if(done||b.disabled)return;q.answers.push(choiceText(i));grade(i===q.correct?{ok:true}:{ok:false},b)};ch.appendChild(b)});
+  if(q.kind==='choice')q.choices.forEach((h,i)=>{const b=document.createElement('button');b.type='button';b.className='choice';b.innerHTML=`<span class="lt">${'ABCD'[i]}.</span>${h}`;
+    b.onclick=()=>{if(LS.hw){LS.hwPick(i);return}if(done||b.disabled)return;q.answers.push(choiceText(i));grade(i===q.correct?{ok:true}:{ok:false},b)};ch.appendChild(b)});
   const a=$('ans');a.hidden=q.kind==='choice'||q.kind==='blanks';a.value='';a.disabled=false;
   a.placeholder=q.kind==='time'?'like 4:35':'Your answer';
-  $('go').hidden=q.kind==='choice';
-  $('tip').textContent=q.kind==='choice'?'Tap your answer.':q.kind==='blanks'?'Fill in every blank, then press Check.':q.kind==='time'?'Write the time like 4:35.':q.fr?'Type a fraction like 3/4 or a mixed number like 1 1/2.':q.dec?'Type a decimal like 2.75.':'Type a number.';
+  $('go').hidden=q.kind==='choice';$('go').textContent='Check';
+  $('tip').textContent=tipFor(q);
   $('fb').hidden=true;$('next').hidden=true;
   const first=q.kind==='blanks'?qe.querySelector('.blank'):q.kind==='choice'?null:a;
   if(first)first.focus({preventScroll:true});
   qe.querySelectorAll('.blank').forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('form').requestSubmit()}}));
   $('card').classList.remove('pop');void $('card').offsetWidth;$('card').classList.add('pop');
+}
+function newQ(){
+  if(LS.on){LS.show();return}
+  const g=G();$('lessonPane').hidden=true;
+  const testing=g.topic==='mix';
+  if(testing&&g.test.i>=TEST_LEN){showResult();return}
+  const id=testing?pick(TEST_POOL[DB.grade]):g.topic;
+  renderQ(mk(id),testing?`Practice test · ${tname(id)}`:tname(id),testing?`Problem ${g.test.i+1} of ${TEST_LEN}`:`Problem ${g.n+1}`);
   renderStatus();renderTable();
 }
 function toast(msg){const t=$('toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,3500)}
@@ -644,9 +899,10 @@ function finish(firstTry,outcome){
   done=true;const g=G();$('ans').disabled=true;$('go').hidden=true;
   $('q').querySelectorAll('.blank').forEach(b=>b.disabled=true);$('choices').querySelectorAll('.choice').forEach(b=>b.disabled=true);
   g.n++;
-  if(g.topic==='mix'){g.test.i++;if(firstTry)g.test.score++;else g.test.missed[cur.topic]=(g.test.missed[cur.topic]||0)+1;
+  if(LS.on)LS.after(firstTry,outcome);
+  else if(g.topic==='mix'){g.test.i++;if(firstTry)g.test.score++;else g.test.missed[cur.topic]=(g.test.missed[cur.topic]||0)+1;
     if(g.test.i>=TEST_LEN){DB.tests=DB.tests||[];DB.tests.push({t:Date.now(),s:DB.grade,score:g.test.score,missed:Object.assign({},g.test.missed)})}}
-  $('next').textContent=g.topic==='mix'&&g.test.i>=TEST_LEN?'See my score':'Next problem';
+  $('next').textContent=LS.on?LS.nextLabel():g.topic==='mix'&&g.test.i>=TEST_LEN?'See my score':'Next problem';
   $('next').hidden=false;$('next').focus({preventScroll:true});save();renderStatus();renderTable();
 }
 function readAnswer(){
@@ -689,9 +945,197 @@ function showResult(){
   $('again').focus({preventScroll:true});
 }
 
-$('form').addEventListener('submit',e=>{e.preventDefault();if(done||cur.kind==='choice')return;const res=readAnswer();if(!res.err)cur.answers.push(inputText());grade(res)});
+// ---------- Saxon-style lessons: daily routine ----------
+const EXB=(title,body)=>`<div class="ex"><b class="tag">${title}</b>${body}</div>`;
+const LESSONS={
+31:{t:'Word Problems About Comparing',facts:'B',count:[4,4,60,'both'],mental:['split','split','split','three','timeAdd','measure','perim','est25'],
+ c:`<p>Some stories do not take anything away. They <b>compare</b> two amounts. Questions like "How many more?" and "How many fewer?" are comparing questions.</p>
+ <p>To compare, subtract the smaller number from the larger number:</p><div class="formula">Larger − Smaller = Difference</div>
+ ${EXB('Example','<p>Lina has 52 stickers. Sam has 18 stickers. How many more stickers does Lina have?</p><ul><li><b>Step 1, Read:</b> nothing went away, so this is comparing.</li><li><b>Step 2, Plan:</b> Larger − Smaller = Difference.</li><li><b>Step 3, Solve:</b> 52 − 18 = d, so d = 34.</li><li><b>Step 4, Check:</b> 18 + 34 = 52. ✓ Lina has 34 more stickers.</li></ul>')}`},
+32:{t:'Multiplication Facts: 9s, 10s, 11s, 12s',facts:'B',count:[4,40,4,'down'],mental:['split','split','split','three','timeSub','perim','moneyAdd','est10'],
+ c:`<ul><li><b>10s:</b> write the number and put a zero after it. 10 × 7 = 70.</li><li><b>9s:</b> the tens digit is one less than the number you multiply by, and the two digits add up to 9. 9 × 6 → 5_ → 54 (5 + 4 = 9).</li><li><b>11s:</b> 11 times 1 through 9 repeats the digit. 11 × 4 = 44. Also 11 × 10 = 110, 11 × 11 = 121, 11 × 12 = 132.</li><li><b>12s:</b> 12 × a number is 10 × the number plus 2 × the number. 12 × 4 = 40 + 8 = 48.</li></ul>
+ ${EXB('Example','<p>9 × 8: the tens digit is 7 (one less than 8). 7 + 2 = 9, so the answer is <b>72</b>.</p>')}`},
+33:{t:'Writing Numbers Through Hundred Thousands',facts:'C',count:[3,30,60,'both'],mental:['tens','tens','tens','three','perim','timeAdd','diff','est10'],
+ c:`<p>Put a comma every three digits, counting from the right. The group to the left of the comma is the <b>thousands</b>.</p>
+ <div class="formula">hundred-thousands · ten-thousands · thousands , hundreds · tens · ones</div>
+ <p>To read the number, read the thousands group, say "thousand," then read the last three digits.</p>
+ ${EXB('Example','<p><b>125,350</b> is "one hundred twenty-five thousand, three hundred fifty."</p><p>Expanded form shows the value of each digit: 5280 = 5000 + 200 + 80.</p>')}`},
+34:{t:'Writing Numbers Through Hundred Millions',facts:'A',count:[7,7,63,'up'],mental:['tens','tens','three','three','three','until','est10','calc'],
+ c:`<p>Big numbers are split into groups of three: <b>millions</b>, <b>thousands</b>, and ones.</p>
+ <div class="formula">millions , thousands , ones</div>
+ <p>Read each group, then say its name. Do not say "ones" at the end.</p>
+ ${EXB('Example','<p><b>12,507,000</b> is "twelve million, five hundred seven thousand."</p><p>To compare big numbers, look at the group names first: any number of millions is greater than any number of thousands.</p>')}`},
+35:{t:'Naming Mixed Numbers and Money',facts:'C',count:[4,40,80,'up'],mental:['tens','tens','three','measure','moneySub','est10','calc','calc'],
+ c:`<p>A <b>mixed number</b> is a whole number and a fraction together, like 2 ¾. We read it "two <b>and</b> three fourths."</p>
+ <p>Money can be written two ways. With a <b>cent sign</b>: 17¢. With a <b>dollar sign</b>: $0.17. Always write two digits after the decimal point, so 8¢ is $0.08.</p>
+ ${EXB('Example','<p>Two quarters, two dimes, and one nickel: 25 + 25 + 10 + 10 + 5 = 75¢ = <b>$0.75</b>.</p><p>$20.05 is "twenty dollars and five cents."</p>')}`},
+36:{t:'Fractions of a Dollar',facts:'C',count:[4,40,80,'up'],mental:['three','three','three','money3','measure','timeAdd','est25','calc'],
+ c:`<p>A dollar is 100 cents, so each coin is a fraction of a dollar.</p>
+ <table class="qt"><tr><th>Coin</th><th>How many make $1</th><th>Fraction of $1</th><th>Value</th></tr><tr><td>penny</td><td>100</td><td>1/100</td><td>$0.01</td></tr><tr><td>nickel</td><td>20</td><td>1/20</td><td>$0.05</td></tr><tr><td>dime</td><td>10</td><td>1/10</td><td>$0.10</td></tr><tr><td>quarter</td><td>4</td><td>1/4</td><td>$0.25</td></tr><tr><td>half-dollar</td><td>2</td><td>1/2</td><td>$0.50</td></tr></table>
+ ${EXB('Example','<p>Three quarters = 75¢ = <b>3/4</b> of a dollar = <b>$0.75</b>.</p>')}`},
+37:{t:'Reading Fractions and Mixed Numbers from a Number Line',facts:'D',count:[5,150,50,'down'],mental:['tens','tens','three','split','sides','perim','calc','calc'],
+ c:`<p>To read a point on a number line, count the <b>spaces</b> (not the marks) between two whole numbers.</p>
+ <p>If there are 4 spaces between 2 and 3, each space is ¼. Start at the whole number on the left of the arrow and count spaces.</p>
+ ${EXB('Example',nlFig({a:8,b:12,tick:1,lab:4,fmt:v=>v/4,marks:[{v:9}]})+'<p>Between 2 and 3 there are 4 spaces, so each space is ¼. The arrow is 1 space past 2, so it points to <b>2 ¼</b>.</p>')}`},
+38:{t:'Multiplication Facts (Memory Group)',facts:'D',count:[7,7,63,'up'],mental:['tens','three','three','moneyAdd','moneyAdd','moneyAdd','calc','calc'],
+ c:`<p>These ten facts are the hardest ones to remember. Practice them until you know them fast.</p>
+ <table class="qt"><tr><td>3 × 4 = 12</td><td>3 × 6 = 18</td><td>3 × 7 = 21</td><td>3 × 8 = 24</td><td>4 × 6 = 24</td></tr><tr><td>4 × 7 = 28</td><td>4 × 8 = 32</td><td>6 × 7 = 42</td><td>6 × 8 = 48</td><td>7 × 8 = 56</td></tr></table>
+ ${EXB('Tip','<p>Use a fact you know. 6 × 8 is 5 × 8 = 40 plus one more 8, so 48. Also learn 11 × 11 = 121 and 12 × 12 = 144.</p>')}`},
+39:{t:'Reading an Inch Scale to the Nearest Fourth',facts:'E',count:[3,30,60,'both'],mental:['money99','money99','money99','measure','perim','until','calc','calc'],
+ c:`<p>Each inch on a ruler is split into 4 equal parts.</p><ul><li>The <b>longest</b> marks are whole inches.</li><li>The <b>middle</b> mark is ½ inch. (2/4 is the same as ½.)</li><li>The <b>shortest</b> marks are ¼ and ¾.</li></ul>
+ ${EXB('Example',rulerFig(11)+'<p>The arrow is 3 short spaces past 2, so it points to <b>2 ¾ inches</b>.</p>')}`},
+40:{t:'Capacity',facts:'D',count:[4,40,4,'down'],mental:['money99','money99','money99','mile','timeAdd','timeAdd','est10','calc'],
+ c:`<p><b>Capacity</b> is how much a container can hold.</p>
+ <div class="formula">2 cups = 1 pint &nbsp;·&nbsp; 2 pints = 1 quart &nbsp;·&nbsp; 4 quarts = 1 gallon</div><div class="formula">1 cup = 8 ounces &nbsp;·&nbsp; 1 liter = 1000 milliliters</div>
+ <p>A liter is a little more than a quart.</p>
+ ${EXB('Example','<p>How many quarts are in 3 gallons? Each gallon is 4 quarts: 3 × 4 = <b>12 quarts</b>.</p>')}`}
+};
+const LNUMS=Object.keys(LESSONS).map(Number);
+const PILLS=[['Power Up',['facts','count','mental']],['New Concept',['concept']],['Lesson Practice',['practice']],['Written Practice',['written']],['Corrections',['fix']]];
+const ORDER=['facts','count','mental','concept','practice','written','fix','done'];
+const ansStr=(q,a)=>a==null||a===''||(Array.isArray(a)&&a.every(x=>!String(x).trim()))?'':q.kind==='choice'?(strip(q.choices[a])||'choice '+'ABCD'[a]):Array.isArray(a)?a.join(', '):String(a);
+function chk(q,a){
+  if(a==null||a==='')return false;
+  if(q.kind==='choice')return a===q.correct;
+  if(q.kind==='blanks'){const v=a.map(parse);return v.length===q.ans.length&&v.every((x,i)=>x&&eq(x,q.ans[i]))}
+  if(q.kind==='time'){const m=String(a).toLowerCase().replace(/\./g,'').trim().match(/^(\d{1,2})\s*:\s*(\d{2})\s*([ap])?/);if(!m)return false;return +m[1]===q.h&&+m[2]===q.m&&!(m[3]&&q.ap&&m[3]!==q.ap[0])}
+  const v=parse(String(a));return !!v&&eq(v,q.ans);
+}
+const fmtS=s=>`${Math.floor(s/60)}:${pad(s%60)}`;
+const LS={
+  on:false,hw:false,
+  n(){if(!LNUMS.includes(DB.lessonN))DB.lessonN=LNUMS.find(n=>!(DB.lessonsDone||{})[n])||LNUMS[0];return DB.lessonN},
+  r(){DB.runs=DB.runs||{};const n=this.n();return DB.runs[n]=DB.runs[n]||{n,step:'facts',i:0,items:[],rec:{},t0:Date.now()}},
+  restart(){DB.runs[this.n()]=null;save();this.show()},
+  setLesson(n){this.hw=false;DB.lessonN=n;save();this.show()},
+  fillSel(){const s=$('lessonSel');s.innerHTML=LNUMS.map(n=>`<option value="${n}"${n===this.n()?' selected':''}>${n}. ${LESSONS[n].t}${(DB.lessonsDone||{})[n]?' ✓':''}</option>`).join('')},
+  stepper(){const r=this.r(),k=ORDER.indexOf(r.step);
+    $('steps').innerHTML=PILLS.map(([name,keys])=>{const idx=keys.map(x=>ORDER.indexOf(x));const now=keys.includes(r.step);const did=!now&&Math.max(...idx)<k;return `<li class="${now?'now':did?'did':''}">${did?'✓ ':''}${name}</li>`}).join('')},
+  gen(step,n){const L=LESSONS[n];
+    if(step==='count')return [countQ(L.count),countQ(L.count)].map(q=>Object.assign(q,{lv:lv('count'),answers:[]}));
+    if(step==='mental')return L.mental.map(k=>{const q=MM[k]();q.topic='mental';q.kind=q.kind||'num';q.lv=lv('mental');q.answers=[];q.text=plainQ(q);return q});
+    if(step==='practice')return Array.from({length:5},()=>{const q=mk('L'+n);q.ref=n;return q});
+    if(step==='count')return [];
+    return [];
+  },
+  buildWritten(n){
+    const head=[mk('word'),n>=31?Object.assign(mk('L31'),{ref:31}):mk('word'),mk('word')];
+    const ls=[n,n,n];if(n-1>=31)ls.push(n-1,n-1);for(let k=31;k<n-1;k++)ls.push(k);
+    const lessonQs=shuffle(ls).slice(0,9).map(k=>Object.assign(mk('L'+k),{ref:k}));
+    const pool=['add','add','add','missing','missing','seq','compare','round','time','geo','geo','angles','frac','mult','mult','word'];
+    const rest=[];while(head.length+lessonQs.length+rest.length<30)rest.push(mk(pick(pool)));
+    return head.concat(shuffle(lessonQs.concat(rest)));
+  },
+  advance(){const r=this.r();r.step=ORDER[ORDER.indexOf(r.step)+1];r.i=0;r.items=this.gen(r.step,r.n);
+    if(r.step==='written'&&!r.hw){r.hw={items:this.buildWritten(r.n),ans:Array(30).fill(null),spent:Array(30).fill(0),i:0}}
+    if(r.step==='fix'&&!(r.hw&&r.hw.wrong&&r.hw.wrong.length))return this.advance();
+    save();this.show()},
+  next(){const r=this.r();if(['count','mental','practice'].includes(r.step)&&r.i<r.items.length)return this.show();if(r.step==='fix'&&r.hw.j<r.hw.wrong.length)return this.show();this.advance()},
+  nextLabel(){const r=this.r();if(r.step==='fix')return r.hw.j<r.hw.wrong.length?'Next correction':'Finish lesson';
+    if(r.i<r.items.length)return 'Next problem';return {count:'Next: Mental math',mental:'Next: New Concept',practice:'Next: Written Practice'}[r.step]||'Next'},
+  after(firstTry,outcome){const r=this.r();
+    if(r.step==='fix'){r.hw.fixed=(r.hw.fixed||0)+(outcome==='second'?1:0);r.hw.j++}
+    else{const rc=r.rec[r.step]=r.rec[r.step]||{r:0,t:0};rc.t++;if(firstTry)rc.r++;r.i++}
+    save()},
+  head(sub){$('hello').textContent=`Lesson ${this.n()}: ${LESSONS[this.n()].t}${sub?' · '+sub:''}`},
+  show(){
+    if(!this.on)return;const r=this.r();this.fillSel();this.stepper();this.hw=false;
+    $('statusSec').hidden=!['count','mental','practice','fix'].includes(r.step);
+    const L=LESSONS[r.n],lt='abcdefgh';
+    if(r.step==='facts')return this.facts();
+    if(r.step==='concept')return this.concept();
+    if(r.step==='written')return this.hwShow();
+    if(r.step==='done')return this.done();
+    if(r.step==='fix'){const k=r.hw.wrong[r.hw.j],q=r.hw.items[k];this.head('Corrections');
+      renderQ(q,'Corrections',`Problem ${k+1} · ${r.hw.j+1} of ${r.hw.wrong.length} to fix`);
+      const a=r.hw.ans[k],was=ansStr(q,a);q.answers=was?[was]:[];tries=1;
+      if(q.kind==='choice'&&a!=null){const b=$('choices').children[a];if(b){b.classList.add('wrong');b.disabled=true}}
+      feedback('bad',was?`On your paper you wrote ${esc(was)}. Try again.`:'You left this one blank. Give it a try.',`Hint: ${cur.hint}`);renderStatus();return}
+    if(r.i>=r.items.length)return this.advance();
+    const q=r.items[r.i];
+    if(r.step==='count'){this.head('Power Up');renderQ(q,'Power Up · Count aloud',`${r.i+1} of ${r.items.length}`)}
+    if(r.step==='mental'){this.head('Power Up');renderQ(q,'Power Up · Mental math',`${lt[r.i]}.`)}
+    if(r.step==='practice'){this.head('Lesson Practice');renderQ(q,`Lesson Practice · Lesson ${r.n}`,`${lt[r.i]}.`)}
+    renderStatus();
+  },
+  pane(top,num,html){$('qbox').hidden=true;$('result').hidden=true;const p=$('lessonPane');p.hidden=false;p.innerHTML=html;$('qTopic').textContent=top;$('qNum').textContent=num;
+    $('card').classList.remove('pop');void $('card').offsetWidth;$('card').classList.add('pop')},
+  facts(){
+    const r=this.r(),L=LESSONS[r.n],F=FACTS[L.facts];this.head('Power Up');
+    const items=Array.from({length:30},()=>F.gen());
+    this.pane('Power Up · Facts',`Power Up ${L.facts}`,`<h2>Facts: ${F.name}</h2><p>Work fast and carefully. Press Start, fill in all 30, then press Done.${DB.factBest&&DB.factBest[L.facts]?` Your best: ${DB.factBest[L.facts].r}/30 in ${fmtS(DB.factBest[L.facts].s)}.`:''}</p>
+      <div class="prow"><div class="timer" id="ftimer">0:00</div><button class="btn" id="fStart" type="button">Start</button><button class="btn" id="fDone" type="button" hidden>Done</button></div>
+      <div class="facts" id="fgrid">${items.map((f,i)=>`<label class="fact"><span>${f[0]} =</span><input id="f${i}" inputmode="numeric" disabled aria-label="${f[0]}"></label>`).join('')}</div><div id="fres"></div>`);
+    let t0=0,tick=null;const ins=[...document.querySelectorAll('#fgrid input')];
+    ins.forEach((el,i)=>el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();(ins[i+1]||$('fDone')).focus()}}));
+    $('fStart').onclick=()=>{t0=Date.now();ins.forEach(x=>x.disabled=false);ins[0].focus();$('fStart').hidden=true;$('fDone').hidden=false;tick=setInterval(()=>{$('ftimer').textContent=fmtS(Math.floor((Date.now()-t0)/1000))},500)};
+    $('fDone').onclick=()=>{clearInterval(tick);const secs=Math.round((Date.now()-t0)/1000);let right=0;
+      ins.forEach((el,i)=>{el.disabled=true;const ok=el.value.trim()!==''&&+el.value===items[i][1];if(ok)right++;const lab=el.parentNode;lab.classList.add(ok?'ok':'no');if(!ok)lab.insertAdjacentHTML('beforeend',`<span class="fix">${items[i][1]}</span>`)});
+      r.rec.facts={r:right,t:30,s:secs,k:L.facts};DB.factBest=DB.factBest||{};const b=DB.factBest[L.facts];if(!b||right>b.r||(right===b.r&&secs<b.s))DB.factBest[L.facts]={r:right,s:secs};save();
+      $('fDone').hidden=true;$('fres').innerHTML=`<p><b>${right} / 30</b> in ${fmtS(secs)}.${right<30?' The green numbers show the right answers.':' Perfect!'}</p><button class="btn" id="fNext" type="button">Next: Count aloud</button>`;$('fNext').onclick=()=>this.advance();$('fNext').focus()};
+  },
+  concept(){const r=this.r(),L=LESSONS[r.n];this.head('New Concept');
+    this.pane('New Concept',`Lesson ${r.n}`,`<h2>${L.t}</h2>${L.c}<div class="prow"><button class="btn" id="cGo" type="button">Start Lesson Practice</button></div>`);$('cGo').onclick=()=>this.advance()},
+  hwShow(){
+    const r=this.r(),h=r.hw,q=h.items[h.i];this.head('Written Practice');
+    renderQ(q,`Written Practice${q.ref?` · from Lesson ${q.ref}`:''}`,`Problem ${h.i+1} of 30`);this.hw=true;this.warned=false;this.enter=Date.now();
+    const a=h.ans[h.i];
+    if(q.kind==='choice'&&a!=null)$('choices').children[a].classList.add('sel');
+    if(q.kind==='blanks'&&a)[...$('q').querySelectorAll('.blank')].forEach((el,j)=>el.value=a[j]||'');
+    if(q.kind!=='choice'&&q.kind!=='blanks'&&a!=null)$('ans').value=a;
+    $('go').hidden=false;$('go').textContent=h.i<29?'Next':'Hand in';
+    $('tip').textContent=tipFor(q).replace(', then press Check','')+' Your work is checked when you hand it in.';
+    $('hwNav').hidden=false;$('hwBack').disabled=h.i===0;
+    $('hwDots').innerHTML=h.items.map((x,k)=>`<button type="button" class="${k===h.i?'cur':''} ${ansStr(x,h.ans[k])?'has':''}" aria-label="Problem ${k+1}">${k+1}</button>`).join('');
+    [...$('hwDots').children].forEach((b,k)=>b.onclick=()=>{this.hwSave();h.i=k;save();this.hwShow()});
+    $('hwBack').onclick=()=>{this.hwSave();h.i=Math.max(0,h.i-1);save();this.hwShow()};
+  },
+  hwPick(i){const h=this.r().hw;h.ans[h.i]=i;[...$('choices').children].forEach((b,k)=>b.classList.toggle('sel',k===i));save()},
+  hwSave(){const h=this.r().hw,q=h.items[h.i];
+    if(q.kind==='blanks')h.ans[h.i]=[...$('q').querySelectorAll('.blank')].map(el=>el.value.trim());
+    else if(q.kind!=='choice')h.ans[h.i]=$('ans').value.trim();
+    h.spent[h.i]+=Date.now()-(this.enter||Date.now());this.enter=Date.now()},
+  hwSubmit(){const h=this.r().hw;this.hwSave();
+    if(h.i<29){h.i++;save();return this.hwShow()}
+    const blank=h.items.map((q,k)=>ansStr(q,h.ans[k])?0:k+1).filter(x=>x);
+    if(blank.length&&!this.warned){this.warned=true;feedback('bad',`Problem${blank.length>1?'s':''} ${blank.join(', ')} ${blank.length>1?'are':'is'} blank.`,'Tap a number above to go back, or press Hand in again to turn it in now.');return}
+    this.warned=false;this.handIn()},
+  handIn(){
+    const r=this.r(),h=r.hw;this.hw=false;const ups=[];
+    h.ok=h.items.map((q,k)=>chk(q,h.ans[k]));h.wrong=h.ok.map((o,k)=>o?-1:k).filter(k=>k>=0);h.j=0;h.fixed=0;
+    h.items.forEach((q,k)=>{if(!h.ok[k])return;cur=q;q.answers=[ansStr(q,h.ans[k])];q.t0=Date.now()-h.spent[k];const g=G(),s=st(q.topic),id=q.topic;
+      s.seen++;s.first++;s.run++;s.miss=0;g.stars+=lv(id);if(s.run>=3&&lv(id)<10){g.lv[id]=lv(id)+1;s.run=0;ups.push(tname(id))}logIt('first')});
+    r.rec.written={r:30-h.wrong.length,t:30};r.step='fix';save();this.stepper();$('statusSec').hidden=true;
+    const sc=30-h.wrong.length;
+    this.pane('Written Practice','Checked',`<p class="ask">${DB.name?DB.name+', your':'Your'} score</p><div class="score">${sc} / 30</div>
+      <p>${sc>=27?'Excellent work!':sc>=22?'Good job.':'Good effort.'} ${h.wrong.length?`Next, correct the ${h.wrong.length} problem${h.wrong.length>1?'s':''} in red, just like corrections at school.`:'No corrections needed!'}</p>
+      ${ups.length?`<p>Level up: ${[...new Set(ups)].map(esc).join(', ')}.</p>`:''}
+      <div class="hwres">${h.ok.map((o,k)=>`<span class="${o?'ok':'no'}">${k+1} ${o?'✓':'✗'}</span>`).join('')}</div>
+      <div class="prow"><button class="btn" id="hwGo" type="button">${h.wrong.length?'Start corrections':'Finish lesson'}</button></div>`);
+    $('hwGo').onclick=()=>{if(h.wrong.length)this.show();else this.advance()};
+  },
+  done(){
+    const r=this.r(),rc=r.rec,h=r.hw||{};this.head('Done');
+    if(!r.logged){r.logged=1;DB.lessonsDone=DB.lessonsDone||{};DB.lessonsDone[r.n]=1;DB.lessonLog=DB.lessonLog||[];
+      DB.lessonLog.push({t:Date.now(),s:DB.grade,n:r.n,facts:rc.facts,count:rc.count,mental:rc.mental,practice:rc.practice,written:rc.written,fixed:{r:h.fixed||0,t:(h.wrong||[]).length}});save();this.fillSel()}
+    const row=(a,b)=>`<tr><td>${a}</td><td><b>${b}</b></td></tr>`,f=x=>x?`${x.r} / ${x.t}`:'–';
+    const nx=LNUMS[LNUMS.indexOf(r.n)+1];
+    this.pane('Lesson complete',`Lesson ${r.n}`,`<h2>Lesson ${r.n} complete!</h2><table class="qt"><tbody>
+      ${row('Facts',rc.facts?`${rc.facts.r} / 30 in ${fmtS(rc.facts.s)}`:'–')}${row('Count aloud',f(rc.count))}${row('Mental math',f(rc.mental))}${row('Lesson Practice',f(rc.practice))}${row('Written Practice',f(rc.written))}${row('Corrections fixed',`${h.fixed||0} / ${(h.wrong||[]).length}`)}</tbody></table>
+      <div class="prow">${nx?`<button class="btn" id="dNext" type="button">Start Lesson ${nx}</button>`:''}<button class="btn ghost" id="dAgain" type="button">Do Lesson ${r.n} again</button></div>`);
+    if(nx)$('dNext').onclick=()=>this.setLesson(nx);$('dAgain').onclick=()=>this.restart();
+  }
+};
+function setMode(m){DB.mode=m;save();LS.on=m==='lesson';LS.hw=false;
+  $('mLesson').setAttribute('aria-pressed',LS.on);$('mFree').setAttribute('aria-pressed',!LS.on);
+  $('lessonBar').hidden=!LS.on;$('chips').hidden=LS.on;$('statusSec').hidden=false;
+  if(LS.on)LS.show();else{hello();renderChips();newQ()}}
+$('mLesson').onclick=()=>setMode('lesson');$('mFree').onclick=()=>setMode('free');
+$('lessonSel').onchange=e=>LS.setLesson(+e.target.value);
+
+$('form').addEventListener('submit',e=>{e.preventDefault();if(LS.hw){LS.hwSubmit();return}if(done||cur.kind==='choice')return;const res=readAnswer();if(!res.err)cur.answers.push(inputText());grade(res)});
 $('parent').addEventListener('toggle',renderTable);
-$('next').onclick=newQ;
+$('next').onclick=()=>LS.on?LS.next():newQ();
 
 function setGrade(n){DB.grade=n;save();$('g4').setAttribute('aria-pressed',n===4);$('g5').setAttribute('aria-pressed',n===5);
   if(!topicsFor().some(t=>t.id===G().topic))G().topic='mix';renderChips();newQ()}
@@ -706,6 +1150,7 @@ $('cancel').onclick=()=>{$('confirmWrap').hidden=true};
 $('confirm').onclick=()=>{DB['g'+DB.grade]={};DB.log=(DB.log||[]).filter(e=>e.s!==DB.grade);DB.tests=(DB.tests||[]).filter(e=>e.s!==DB.grade);save();$('confirmWrap').hidden=true;renderChips();newQ()};
 
 setGrade(DB.grade===5?5:4);
+setMode(DB.mode||'lesson');
 </script>
 </body>
 </html>

@@ -67,6 +67,9 @@ h1 span{color:var(--accent)}
 .vert{display:inline-grid;justify-items:end;line-height:1.3;padding:0 .2em}
 .vert .opl{border-bottom:.08em solid currentColor;padding-left:.3em}
 .circ{color:var(--muted);font-size:1.1em}
+.ldiv{display:inline-flex;align-items:flex-end;font-family:var(--mono)}
+.ldiv .dvs{padding-right:.12em}
+.ldiv .dvd{border-top:.08em solid currentColor;border-left:.08em solid currentColor;border-top-left-radius:.45em;padding:0 .25em 0 .35em}
 .blank{width:5.2ch;font:500 .8em var(--mono);color:var(--ink);background:var(--paper);border:2px solid var(--line);border-bottom-color:var(--accent);border-radius:8px;padding:2px 6px;text-align:center}
 .blank:focus{outline:none;border-color:var(--accent)}
 .fig{max-width:300px}
@@ -548,6 +551,56 @@ function numLine(L){
     steps:`Each small step is ${fmt(t)}. The arrow is ${k} steps after ${fmt(start)}, so it points to ${fmt(val)}.`};
 }
 
+// ---------- challenge topics: 2-digit multiplication, long division, rates ----------
+const remParse=s=>{const m=String(s).replace(/,/g,'').trim().match(/^(\d+)\s*(?:r|rem|remainder)?\s*(\d+)?$/i);return m?{q:+m[1],r:+(m[2]||0)}:null};
+const LD=(n,d)=>`<span class="ldiv"><span class="dvs">${d}</span><span class="dvd">${n}</span></span>`;
+function ldSteps(n,d){
+  const s=String(n),out=[];let cur=0,started=false,qs='';
+  for(let i=0;i<s.length;i++){cur=cur*10+ +s[i];
+    if(!started&&cur<d&&i<s.length-1)continue;started=true;
+    const qd=Math.floor(cur/d),sub=qd*d,left=cur-sub;qs+=qd;
+    let line=`Divide: ${cur} ÷ ${d} = ${qd}. Multiply: ${qd} × ${d} = ${sub}. Subtract: ${cur} − ${sub} = ${left}.`;
+    if(i<s.length-1)line+=` Bring down the ${s[i+1]}.`;out.push(line);cur=left}
+  out.push(`Answer: ${+qs}${cur?` R ${cur}`:''}. Check: ${+qs} × ${d}${cur?` + ${cur}`:''} = ${N(n)}.`);
+  return out.join('<br>');
+}
+GEN.mult2=function(L){
+  let a,b;
+  if(L<=2){a=R(12,49);b=R(11,19)}else if(L<=4){a=R(12,99);b=R(11,39)}else if(L<=6){a=R(21,99);b=R(21,99)}else if(L<=8){a=R(101,499);b=R(12,49)}else{a=R(201,999);b=R(21,99)}
+  const o=b%10,t=b-o,p=a*b,p1=a*o,p2=a*t;
+  const steps=`Multiply by the ones: ${N(a)} × ${o} = ${N(p1)}. Multiply by the tens: ${N(a)} × ${t} = ${N(p2)} (write a 0 in the ones place first). Add the two rows: ${N(p1)} + ${N(p2)} = ${N(p)}.`;
+  const hint=`Do it in two rows. First ${N(a)} × ${o}. Then ${N(a)} × ${t}, which starts with a 0 in the ones place. Then add the rows.`;
+  if(L<=5&&o&&Math.random()<.5){const bl=w=>`<input class="blank" inputmode="numeric" style="width:${String(w).length+2}ch">`;
+    return {kind:'blanks',ask:'Multiply in two rows. Fill in each row, then the total.',html:`${V(N(a),'×',b)}<div style="font:500 1.05rem/2.2 var(--mono)">Ones row: ${N(a)} × ${o} = ${bl(p1)}<br>Tens row: ${N(a)} × ${t} = ${bl(p2)}<br>Total: ${bl(p)}</div>`,
+      ans:[Q(p1),Q(p2),Q(p)],show:`${N(p1)}, ${N(p2)}, ${N(p)}`,txt:`${N(a)} × ${b} in two rows`,hint,steps}}
+  return {ask:'Multiply.',html:V(N(a),'×',b),ans:Q(p),hint,steps};
+};
+GEN.ldiv=function(L){
+  let d,q,r=0;
+  if(L<=2){d=R(2,6);q=R(12,30)}else if(L<=4){d=R(3,9);q=R(21,199)}else if(L<=6){d=R(3,9);q=R(21,199);r=R(1,d-1)}
+  else if(L<=8){d=R(4,9);q=R(120,999);r=Math.random()<.7?R(1,d-1):0}else{d=R(11,25);q=R(12,60);r=Math.random()<.6?R(1,d-1):0}
+  const n=d*q+r;
+  return {kind:'rem',ask:'Use long division.',html:LD(n,d),txt:`${n} ÷ ${d}`,qt:q,r,show:r?`${q} R ${r}`:String(q),
+    hint:`Work from the left: Divide, Multiply, Subtract, Bring down. Repeat. First ask how many ${d}s fit into ${String(n).slice(0,String(n)[0]<d?2:1)}.`,steps:ldSteps(n,d)};
+};
+GEN.rate=function(L){
+  const k=kid(),big=L>=5;
+  const t=pick(L<=3?['unit','total','speed','time']:L<=6?['unit','total','speed','time','price','speedback']:['two','two','price','speedback','time','unit']);
+  if(t==='unit'){const per=R(2,big?25:9),n=R(2,big?12:6),it=pick(['notebooks','markers','tickets','books']);
+    return {html:`${k.n} paid $${per*n} for ${n} ${it}. Each one cost the same. How much did one cost?`,ans:Q(per),money:true,show:`$${per}`,hint:'To find the price of one, divide the total by how many.',steps:`$${per*n} ÷ ${n} = $${per} each.`,wordy:true,ask:'Rate word problem'}}
+  if(t==='total'){const r=R(2,big?60:9),h=R(2,big?12:8),it=pick(['toys','cookies','bottles','buttons']);
+    return {html:`A machine makes ${r} ${it} each hour. How many ${it} does it make in ${h} hours?`,ans:Q(r*h),hint:'Rate × time = total.',steps:`${r} × ${h} = ${N(r*h)} ${it}.`,wordy:true,ask:'Rate word problem'}}
+  if(t==='speed'){const s=R(L<=3?2:3,L<=3?6:9)*10+(big?5:0),h=R(2,big?8:5);
+    return {html:`A car drives ${s} miles each hour. How far does it drive in ${h} hours?`,ans:Q(s*h),hint:'Distance = speed × time.',steps:`${s} × ${h} = ${N(s*h)} miles.`,wordy:true,ask:'Rate word problem'}}
+  if(t==='speedback'){const s=R(3,9)*10+pick([0,5]),h=R(2,big?9:5);
+    return {html:`A train went ${s*h} miles in ${h} hours. It went the same distance each hour. How many miles did it go each hour?`,ans:Q(s),hint:'Speed = distance ÷ time.',steps:`${s*h} ÷ ${h} = ${s} miles each hour.`,wordy:true,ask:'Rate word problem'}}
+  if(t==='time'){const r=R(3,big?15:9),d=R(3,big?12:8);
+    return {html:`${k.n} reads ${r} pages each day. How many days will it take ${k.his==='his'?'him':'her'} to read ${r*d} pages?`,ans:Q(d),hint:'How many groups of the daily amount fit into the total? Divide.',steps:`${r*d} ÷ ${r} = ${d} days.`,wordy:true,ask:'Rate word problem'}}
+  if(t==='price'){let ua=R(2,9),ub;do{ub=R(2,9)}while(ub===ua);const na=R(2,6),nb=R(2,6),it=pick(['pens','apples','juice boxes','stickers']);
+    return {kind:'choice',ask:'Which store has the lower price for one?',html:`Store A sells ${na} ${it} for $${ua*na}. Store B sells ${nb} ${it} for $${ub*nb}.`,wordy:true,choices:[WT('Store A'),WT('Store B')],correct:ua<ub?0:1,show:ua<ub?'Store A':'Store B',hint:'Find the price of one at each store, then compare.',steps:`Store A: $${ua*na} ÷ ${na} = $${ua} each. Store B: $${ub*nb} ÷ ${nb} = $${ub} each. ${ua<ub?'Store A':'Store B'} is cheaper.`}}
+  const r=R(6,15),h=R(2,6),d=R(3,6);
+  return {html:`${k.n} earns $${r} each hour. ${k.P} works ${h} hours each day. How much does ${k.p} earn in ${d} days?`,ans:Q(r*h*d),money:true,show:`$${r*h*d}`,hint:'Two steps: first find how much for one day, then multiply by the number of days.',steps:`One day: $${r} × ${h} = $${r*h}. ${d} days: $${r*h} × ${d} = $${r*h*d}.`,wordy:true,ask:'Rate word problem'};
+};
 // ---------- Saxon-style lessons: figures ----------
 function nlFig(o){ // integer units: a..b, tick, lab (label every), fmt, marks [{v,t}]
   const x=v=>20+260*(v-o.a)/(o.b-o.a);
@@ -734,7 +787,7 @@ const TOPICS=[
   {id:'mix',name:'Practice test'},{id:'word',name:'Word problems'},{id:'add',name:'Add & subtract'},{id:'missing',name:'Missing numbers'},
   {id:'seq',name:'Patterns & even/odd'},{id:'compare',name:'Compare < > ='},{id:'round',name:'Number lines & rounding'},{id:'time',name:'Telling time'},
   {id:'geo',name:'Measuring & perimeter'},{id:'angles',name:'Angles & shapes'},{id:'frac',name:'Fractions'},
-  {id:'mult',name:'Multiply'},{id:'div',name:'Divide'},{id:'dec',name:'Decimals'},{id:'ops',name:'Order of operations',g5:true},
+  {id:'mult',name:'Multiply'},{id:'mult2',name:'2-digit multiplication'},{id:'div',name:'Divide'},{id:'ldiv',name:'Long division'},{id:'rate',name:'Rate problems'},{id:'dec',name:'Decimals'},{id:'ops',name:'Order of operations',g5:true},
   {id:'mental',name:'Mental math',hidden:true},{id:'count',name:'Counting patterns',hidden:true},
   {id:'L31',name:'Lesson 31: Comparing word problems',hidden:true},{id:'L32',name:'Lesson 32: 9s, 10s, 11s, 12s facts',hidden:true},
   {id:'L33',name:'Lesson 33: Numbers to hundred thousands',hidden:true},{id:'L34',name:'Lesson 34: Numbers to hundred millions',hidden:true},
@@ -742,8 +795,8 @@ const TOPICS=[
   {id:'L37',name:'Lesson 37: Fractions on a number line',hidden:true},{id:'L38',name:'Lesson 38: Memory group facts',hidden:true},
   {id:'L39',name:'Lesson 39: Inch ruler to the nearest fourth',hidden:true},{id:'L40',name:'Lesson 40: Capacity',hidden:true}];
 // Practice test mix, weighted like a Saxon cumulative test
-const TEST_POOL={4:['word','word','word','add','add','missing','missing','seq','compare','round','round','time','geo','geo','angles','frac','mult','div'],
-                 5:['word','word','word','add','missing','missing','seq','compare','round','time','geo','geo','angles','frac','frac','mult','div','dec','dec','ops']};
+const TEST_POOL={4:['word','word','word','add','add','missing','missing','seq','compare','round','round','time','geo','geo','angles','frac','mult','div','mult2','ldiv','rate'],
+                 5:['word','word','word','add','missing','missing','seq','compare','round','time','geo','geo','angles','frac','frac','mult','div','dec','dec','ops','mult2','ldiv','rate']};
 const TEST_LEN=20;
 const KEY='mathclimb.v1';
 let DB={grade:4,name:'',g4:{},g5:{}};
@@ -861,7 +914,7 @@ function renderTable(){
   if($('repShare'))$('repShare').onclick=()=>navigator.share({title:'Math Climb progress report',text:txt}).catch(()=>{});
 }
 function mk(id){const q=(GEN[id]||LG[id])(lv(id),DB.grade);q.topic=id;q.kind=q.kind||'num';q.lv=lv(id);q.answers=[];q.text=plainQ(q);return q}
-const tipFor=q=>q.kind==='choice'?'Tap your answer.':q.kind==='blanks'?'Fill in every blank, then press Check.':q.kind==='time'?'Write the time like 4:35.':q.money?'Type it like $0.75.':q.fr?'Type a fraction like 3/4 or a mixed number like 1 1/2.':q.dec?'Type a decimal like 2.75.':'Type a number.';
+const tipFor=q=>q.kind==='rem'?'Type the answer like 23 R 4. If nothing is left over, just type 23.':q.kind==='choice'?'Tap your answer.':q.kind==='blanks'?'Fill in every blank, then press Check.':q.kind==='time'?'Write the time like 4:35.':q.money?'Type it like $0.75.':q.fr?'Type a fraction like 3/4 or a mixed number like 1 1/2.':q.dec?'Type a decimal like 2.75.':'Type a number.';
 function renderQ(q,top,num){
   cur=q;tries=0;done=false;q.answers=q.answers||[];q.t0=Date.now();if(!q.text)q.text=plainQ(q);
   $('result').hidden=true;$('lessonPane').hidden=true;$('qbox').hidden=false;$('hwNav').hidden=true;
@@ -873,7 +926,7 @@ function renderQ(q,top,num){
   if(q.kind==='choice')q.choices.forEach((h,i)=>{const b=document.createElement('button');b.type='button';b.className='choice';b.innerHTML=`<span class="lt">${'ABCD'[i]}.</span>${h}`;
     b.onclick=()=>{if(LS.hw){LS.hwPick(i);return}if(done||b.disabled)return;q.answers.push(choiceText(i));grade(i===q.correct?{ok:true}:{ok:false},b)};ch.appendChild(b)});
   const a=$('ans');a.hidden=q.kind==='choice'||q.kind==='blanks';a.value='';a.disabled=false;
-  a.placeholder=q.kind==='time'?'like 4:35':'Your answer';
+  a.placeholder=q.kind==='time'?'like 4:35':q.kind==='rem'?'like 23 R 4':'Your answer';
   $('go').hidden=q.kind==='choice';$('go').textContent='Check';
   $('tip').textContent=tipFor(q);
   $('fb').hidden=true;$('next').hidden=true;
@@ -908,6 +961,7 @@ function finish(firstTry,outcome){
 function readAnswer(){
   if(cur.kind==='blanks'){const vals=[...$('q').querySelectorAll('.blank')].map(i=>parse(i.value));if(vals.some(v=>!v))return{err:'Fill in every blank with a number.'};return{ok:vals.every((v,i)=>eq(v,cur.ans[i]))}}
   const raw=$('ans').value;
+  if(cur.kind==='rem'){const v=remParse(raw);if(!v)return{err:'Type the answer like 23 R 4.'};return{ok:v.q===cur.qt&&v.r===cur.r}}
   if(cur.kind==='time'){const s=raw.toLowerCase().replace(/\./g,'').trim();const m=s.match(/^(\d{1,2})\s*:\s*(\d{2})\s*([ap])?/);if(!m)return{err:'Write the time like 4:35.'};
     let ok=+m[1]===cur.h&&+m[2]===cur.m;if(ok&&m[3]&&cur.ap&&m[3]!==cur.ap[0])ok=false;return{ok}}
   const v=parse(raw);if(!v)return{err:cur.fr?'Write it like 3/4, 1 1/2, or a whole number.':'That does not look like a number yet. Try again.'};
@@ -998,6 +1052,7 @@ function chk(q,a){
   if(a==null||a==='')return false;
   if(q.kind==='choice')return a===q.correct;
   if(q.kind==='blanks'){const v=a.map(parse);return v.length===q.ans.length&&v.every((x,i)=>x&&eq(x,q.ans[i]))}
+  if(q.kind==='rem'){const v=remParse(a);return !!v&&v.q===q.qt&&v.r===q.r}
   if(q.kind==='time'){const m=String(a).toLowerCase().replace(/\./g,'').trim().match(/^(\d{1,2})\s*:\s*(\d{2})\s*([ap])?/);if(!m)return false;return +m[1]===q.h&&+m[2]===q.m&&!(m[3]&&q.ap&&m[3]!==q.ap[0])}
   const v=parse(String(a));return !!v&&eq(v,q.ans);
 }
@@ -1022,7 +1077,7 @@ const LS={
     const head=[mk('word'),n>=31?Object.assign(mk('L31'),{ref:31}):mk('word'),mk('word')];
     const ls=[n,n,n];if(n-1>=31)ls.push(n-1,n-1);for(let k=31;k<n-1;k++)ls.push(k);
     const lessonQs=shuffle(ls).slice(0,9).map(k=>Object.assign(mk('L'+k),{ref:k}));
-    const pool=['add','add','add','missing','missing','seq','compare','round','time','geo','geo','angles','frac','mult','mult','word'];
+    const pool=['add','add','add','missing','missing','seq','compare','round','time','geo','geo','angles','frac','mult','mult','word','mult2','ldiv','rate'];
     const rest=[];while(head.length+lessonQs.length+rest.length<30)rest.push(mk(pick(pool)));
     return head.concat(shuffle(lessonQs.concat(rest)));
   },

@@ -189,12 +189,20 @@ select{font:600 1rem var(--body);color:var(--ink);background:var(--paper);border
 .fig .pie.on{fill:var(--accent)}
 .fig .rul{fill:var(--paper);stroke:var(--ink);stroke-width:2}
 .fig .ptl{font:800 15px var(--body);fill:var(--accent)}
+/* practice units */
+.umeter{height:10px;border-radius:999px;background:var(--grid);overflow:hidden;max-width:360px}
+.umeter i{display:block;height:100%;background:var(--good);border-radius:999px}
+.uprog{display:flex;flex-wrap:wrap;gap:4px}
+.uprog span{min-width:26px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--paper);font:600 .7rem/22px var(--mono);color:var(--muted);text-align:center}
+.uprog span.ok{background:var(--good-bg);color:var(--good);border-color:transparent}
+.uprog span.no{background:var(--bad-bg);color:var(--bad);border-color:transparent}
+.uprog span.cur{border-color:var(--accent);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.utime{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--muted)}
+.utime .timer{font-size:1.5rem}
+.boost{font:800 .85rem var(--body);color:var(--sun);border:1px solid var(--sun);border-radius:999px;padding:3px 10px}
 #repText{width:100%;height:140px;font:12px var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px}
 @media (prefers-reduced-motion: no-preference){.pop{animation:pop .35s ease}@keyframes pop{0%{transform:scale(.96);opacity:.6}100%{transform:none;opacity:1}}}
-body{margin:0}
 </style>
-</head>
-<body>
 
 <div class="wrap">
   <header>
@@ -206,7 +214,12 @@ body{margin:0}
 
   <div class="who"><label for="name">Player</label><input id="name" maxlength="16" placeholder="Your name"></div>
 
-  <div class="seg modeseg" role="group" aria-label="Mode"><button id="mLesson" type="button" aria-pressed="true">Today's lesson</button><button id="mFree" type="button" aria-pressed="false">Free practice</button></div>
+  <div class="seg modeseg" role="group" aria-label="Mode"><button id="mUnits" type="button" aria-pressed="false">Quiz</button><button id="mLesson" type="button" aria-pressed="true">Today's lesson</button><button id="mFree" type="button" aria-pressed="false">Free practice</button></div>
+
+  <div class="lessonbar" id="unitBar" hidden>
+    <div class="row" id="uRun" hidden><div class="utime"><span>Time</span><span class="timer" id="uTimer">0:00</span></div><span id="uBoost"></span></div>
+    <div class="uprog" id="uProg" aria-label="Problems in this practice"></div>
+  </div>
 
   <div class="lessonbar" id="lessonBar" hidden>
     <div class="row"><label for="lessonSel" class="how" style="margin:0">Lesson</label><select id="lessonSel"></select></div>
@@ -247,7 +260,7 @@ body{margin:0}
   <details id="parent">
     <summary>Grown-up corner: progress report</summary>
     <div class="seg" role="group" aria-label="Question set"><button id="g4" aria-pressed="true">Set A</button><button id="g5" aria-pressed="false">Set B</button></div>
-    <p class="how">Questions follow the style of her school book's tests. Each topic has its own level from 1 to 10. Three first-try correct answers in a row move up one level. Two misses in a row move down one level. A wrong answer first shows a hint, then the worked solution. "Practice test" gives 20 mixed problems like a cumulative test and scores first-try answers. "Today's lesson" follows her school book's daily routine: Power Up (timed facts, count aloud, mental math a–h), New Concept, Lesson Practice, then 30 Written Practice problems that are checked at the end, followed by corrections.</p>
+    <p class="how">Questions follow the style of her school book's tests. Each topic has its own level from 1 to 10. Three first-try correct answers in a row move up one level. Two misses in a row move down one level. A wrong answer first shows a hint, then the worked solution. "Quiz" covers multiplying by a two-digit number, dividing a two-digit number by a one-digit number, and her book (Investigation 4 and Lessons 41–50). Every book quiz also mixes in 2 two-digit multiplication and 2 division problems. It never shows her lesson names. Each book unit has 100 problems from easy to harder, and each quiz gives her 20 of them with a timer. The app picks the unit itself: after 16+ right it moves to the next unit, otherwise it repeats with new problems. When she answers 3 in a row fast and right, harder challenge problems (5th–6th grade level) come in; two misses bring it back down. The "★ Challenge quiz" button gives 20 problems at that higher level, getting harder every 5 problems. A wrong answer shows an explanation of the book's method, never the answer, and she tries again; problems she cannot solve come back at the end. Every wrong answer, the correct answer, and her time are listed below. "Practice test" gives 20 mixed problems like a cumulative test and scores first-try answers. "Today's lesson" follows her school book's daily routine: Power Up (timed facts, count aloud, mental math a–h), New Concept, Lesson Practice, then 30 Written Practice problems that are checked at the end, followed by corrections.</p>
     <div class="rep" id="report"></div>
     <div class="reset"><button class="small" id="reset" type="button">Reset this set</button><span id="confirmWrap" hidden><button class="small warn" id="confirm" type="button">Yes, erase progress</button> <button class="small" id="cancel" type="button">Keep it</button></span></div>
   </details>
@@ -333,8 +346,9 @@ const choiceQ=(items,correct,extra)=>{const all=shuffle(items.map((h,i)=>({h,ok:
 // ---------- question generators: (level 1–10, grade) ----------
 const GEN={
 add(L){
-  const dg=L<=2?2:L<=4?3:L<=6?4:L<=8?5:6, lo=10**(dg-1), hi=10**dg-1;
-  if(L>=2&&Math.random()<.3){const n=L<=4?4:5;const xs=Array.from({length:n},()=>R(L<=4?11:101,L<=4?99:999));const s=xs.reduce((a,b)=>a+b,0);
+  const dg=L<=4?2:L<=8?3:4, lo=10**(dg-1), hi=10**dg-1;
+  if(L<=5){const op=Math.random()<.5?'+':'-',[a,b]=noRegPair(dg,op);return op==='+'?{ask:'Add.',html:V(N(a),'+',N(b)),ans:Q(a+b),hint:'Start with the ones column, then the tens, then the hundreds.',steps:`${N(a)} + ${N(b)} = ${N(a+b)}.`}:{ask:'Subtract.',html:V(N(a),'−',N(b)),ans:Q(a-b),hint:'Start with the ones column: take the bottom digit away from the top digit. Then the tens, then the hundreds.',steps:`${N(a)} − ${N(b)} = ${N(a-b)}. Check: ${N(a-b)} + ${N(b)} = ${N(a)}.`}}
+  if(L>=7&&Math.random()<.3){const n=3;const xs=Array.from({length:n},()=>R(L<=4?11:101,L<=4?99:999));const s=xs.reduce((a,b)=>a+b,0);
     return {html:xs.map(N).join(' + '),ask:'Add.',ans:Q(s),hint:'Look for numbers that are easy to add together first, or add down a column.',steps:`${xs.map(N).join(' + ')} = ${N(s)}.`}}
   let a=R(lo,hi), b=R(lo,hi);
   if(Math.random()<.5){ if(a<b)[a,b]=[b,a];
@@ -875,9 +889,25 @@ function reportText(S){
   lines.push('','DOING WELL:',...(S.strong.length?S.strong.map(t=>`- ${t.name}: ${t.acc}% first try, level ${t.lv}`):['- Not enough practice yet to tell.']));
   const LL=(DB.lessonLog||[]).filter(x=>x.s===DB.grade).slice(-5).reverse();
   if(LL.length)lines.push('','LESSONS:',...LL.map(x=>`- ${fmtD(x.t)} Lesson ${x.n}: facts ${x.facts?x.facts.r+'/30 in '+fmtS(x.facts.s):'-'}, written practice ${x.written?x.written.r+'/30':'-'}, fixed ${x.fixed?x.fixed.r+'/'+x.fixed.t:'-'}`));
+  unitText(lines);
   if(S.tests.length)lines.push('','PRACTICE TESTS:',...S.tests.map(x=>`- ${fmtD(x.t)}: ${x.score} / ${TEST_LEN}`));
   return lines.join('\n');
 }
+function unitSkillAgg(){const UL=(DB.unitLog||[]).filter(x=>x.s===DB.grade),agg={};
+  UL.forEach(x=>(x.wrong||[]).forEach(w=>{const k=w.sk||'Other',a=agg[k]=agg[k]||{n:0,u:x.u,ex:[]};a.n++;a.ex.push(w)}));
+  return Object.entries(agg).sort((a,b)=>b[1].n-a[1].n)}
+function unitReport(){
+  const UL=(DB.unitLog||[]).filter(x=>x.s===DB.grade);if(!UL.length)return '';
+  const rows=UL.slice(-10).reverse().map(x=>`<tr><td>${fmtD(x.t)}</td><td>${ulabel(x.u)}</td><td>${x.score} / ${x.n}</td><td>${fmtS(x.secs)}</td><td>${Math.round(x.secs/x.n)} s</td><td>${(x.wrong||[]).length}</td><td>${x.u==='CH'?'–':(DB.units&&DB.units[x.u]?DB.units[x.u].m.length:0)+'/100'}</td></tr>`).join('');
+  const sk=unitSkillAgg().slice(0,6).map(([k,a])=>{const e=a.ex[a.ex.length-1];return `<div class="flag"><strong>${esc(k)}</strong> (${ulabel(a.u)}): ${a.n} wrong answer${a.n>1?'s':''}<small>Latest: “${esc(e.q)}” She answered <span class="bad">${esc(e.a||'–')}</span>, correct is <span class="good">${esc(e.c)}</span>.</small></div>`}).join('');
+  const last=UL[UL.length-1],slow=last.times?last.times.map((t,i)=>[t,i]).sort((a,b)=>b[0]-a[0]).slice(0,3).filter(x=>x[0]>=30):[];
+  const wl=(last.wrong||[]).map(w=>`<div class="miss"><div class="meta">${esc(w.sk)} · try ${w.n}${w.ph==='retry'?' · second round':''}</div>${esc(w.q)}<br>She answered <span class="bad">${esc(w.a||'–')}</span>. Correct: <span class="good">${esc(w.c)}</span></div>`).join('');
+  return `<section><h3>Quizzes</h3><div class="tbl"><table><thead><tr><th>Date</th><th>Unit</th><th>First try</th><th>Time</th><th>Per problem</th><th>Wrong answers</th><th>Mastered</th></tr></thead><tbody>${rows}</tbody></table></div></section>
+    ${sk?`<section><h3>Unit skills she misses most</h3>${sk}</section>`:''}
+    <section><h3>Last unit (${ulabel(last.u)}, ${fmtD(last.t)}): every wrong answer</h3>${slow.length?`<p class="how" style="margin:0">Slowest problems: ${slow.map(([t,i])=>`#${i+1} (${fmtS(t)})`).join(', ')}.</p>`:''}${wl||'<p class="how" style="margin:0">No wrong answers.</p>'}</section>`}
+function unitText(lines){const UL=(DB.unitLog||[]).filter(x=>x.s===DB.grade);if(!UL.length)return;
+  lines.push('','PRACTICE UNITS:',...UL.slice(-6).reverse().map(x=>`- ${fmtD(x.t)} ${ulabel(x.u)}${UG[x.u]?` (${UG[x.u].name})`:''}: ${x.score}/${x.n} first try, ${fmtS(x.secs)}, ${(x.wrong||[]).length} wrong answers`));
+  const sk=unitSkillAgg().slice(0,6);if(sk.length){lines.push('UNIT SKILLS MISSED MOST:');sk.forEach(([k,a])=>{const e=a.ex[a.ex.length-1];lines.push(`- ${k} (${ulabel(a.u)}): ${a.n}x, e.g. "${e.q}" (answered ${e.a||'-'}, correct ${e.c})`)})}}
 function renderTable(){
   const r=$('report');if(!r||!$('parent').open)return;
   const S=stats();
@@ -904,6 +934,7 @@ function renderTable(){
     <section><h3>By topic</h3><div class="tbl"><table><thead><tr><th>Topic</th><th>Level</th><th>Answered</th><th>First try (last 20)</th><th>Last practiced</th></tr></thead><tbody>${rows}</tbody></table></div></section>
     ${S.tests.length?`<section><h3>Practice tests</h3><div class="tbl"><table><tbody>${S.tests.map(x=>`<tr><td>${fmtD(x.t)}</td><td>${x.score} / ${TEST_LEN}</td><td>${Object.keys(x.missed).map(tname).join(', ')||'No misses'}</td></tr>`).join('')}</tbody></table></div></section>`:''}
     ${LL.length?`<section><h3>Lessons</h3><div class="tbl"><table><thead><tr><th>Date</th><th>Lesson</th><th>Facts</th><th>Mental math</th><th>Lesson Practice</th><th>Written Practice</th><th>Fixed</th></tr></thead><tbody>${LL.map(x=>`<tr><td>${fmtD(x.t)}</td><td>${x.n}</td><td>${x.facts?`${x.facts.r}/30 · ${fmtS(x.facts.s)}`:'–'}</td><td>${fx(x.mental)}</td><td>${fx(x.practice)}</td><td>${fx(x.written)}</td><td>${fx(x.fixed)}</td></tr>`).join('')}</tbody></table></div></section>`:''}
+    ${unitReport()}
     <section><h3>Recent mistakes</h3>${mis||'<p class="how" style="margin:0">No mistakes yet.</p>'}</section>
     <section><h3>Send this report</h3><div class="repbtns"><button class="small" id="repCopy" type="button">Copy report</button><a class="small" id="repMail" href="#">Email report</a>${navigator.share?'<button class="small" id="repShare" type="button">Share…</button>':''}<span id="repMsg" class="how" style="margin:0"></span></div>
       <textarea id="repText" readonly hidden></textarea></section>`;
@@ -924,7 +955,7 @@ function renderQ(q,top,num){
   const fig=$('fig');fig.hidden=!q.fig;fig.innerHTML=q.fig||'';
   const ch=$('choices');ch.hidden=q.kind!=='choice';ch.innerHTML='';
   if(q.kind==='choice')q.choices.forEach((h,i)=>{const b=document.createElement('button');b.type='button';b.className='choice';b.innerHTML=`<span class="lt">${'ABCD'[i]}.</span>${h}`;
-    b.onclick=()=>{if(LS.hw){LS.hwPick(i);return}if(done||b.disabled)return;q.answers.push(choiceText(i));grade(i===q.correct?{ok:true}:{ok:false},b)};ch.appendChild(b)});
+    b.onclick=()=>{if(LS.hw){LS.hwPick(i);return}if(done||b.disabled)return;if(UN.on){q.answers.push(choiceText(i));UN.check(i===q.correct,b);return}q.answers.push(choiceText(i));grade(i===q.correct?{ok:true}:{ok:false},b)};ch.appendChild(b)});
   const a=$('ans');a.hidden=q.kind==='choice'||q.kind==='blanks';a.value='';a.disabled=false;
   a.placeholder=q.kind==='time'?'like 4:35':q.kind==='rem'?'like 23 R 4':'Your answer';
   $('go').hidden=q.kind==='choice';$('go').textContent='Check';
@@ -937,6 +968,7 @@ function renderQ(q,top,num){
 }
 function newQ(){
   if(LS.on){LS.show();return}
+  if(UN.on){UN.show();return}
   const g=G();$('lessonPane').hidden=true;
   const testing=g.topic==='mix';
   if(testing&&g.test.i>=TEST_LEN){showResult();return}
@@ -972,7 +1004,7 @@ function grade(res,btn){
   const g=G(),s=st(cur.topic),id=cur.topic;
   if(res.ok){
     if(btn)btn.classList.add('right');
-    if(tries===0){s.seen++;s.first++;s.run++;s.miss=0;g.stars+=lv(id);
+    if(tries===0){s.seen++;s.first++;s.run++;s.miss=0;g.stars+=lv(id);if(Date.now()-cur.t0<(cur.wordy?40000:20000))s.run++;
       if(s.run>=3&&lv(id)<10){g.lv[id]=lv(id)+1;s.run=0;toast(`Level up! ${tname(id)} is now level ${g.lv[id]}.`)}
       feedback('good',pick(['Correct!','Nice work!','Exactly right!','You got it!']),cur.steps);
     }else{s.seen++;s.run=0;g.stars+=1;feedback('good','Got it on the second try. Good fixing!',cur.steps)}
@@ -1181,16 +1213,497 @@ const LS={
     if(nx)$('dNext').onclick=()=>this.setLesson(nx);$('dAgain').onclick=()=>this.restart();
   }
 };
-function setMode(m){DB.mode=m;save();LS.on=m==='lesson';LS.hw=false;
-  $('mLesson').setAttribute('aria-pressed',LS.on);$('mFree').setAttribute('aria-pressed',!LS.on);
-  $('lessonBar').hidden=!LS.on;$('chips').hidden=LS.on;$('statusSec').hidden=false;
-  if(LS.on)LS.show();else{hello();renderChips();newQ()}}
-$('mLesson').onclick=()=>setMode('lesson');$('mFree').onclick=()=>setMode('free');
+// ---------- Practice units (book Lessons 41–50 + Investigation 4): 100-question bank each, 20 per run ----------
+const $c=c=>'$'+t2(c);
+const dstr=(v,p)=>(v/10**p).toFixed(p);
+const r10=n=>Math.round(n/10)*10, r100=n=>Math.round(n/100)*100;
+const HOW=s=>`<b>How your book does it:</b> ${s}`;
+const blk=w=>`<input class="blank" inputmode="decimal" style="width:${w}ch">`;
+function stripSVG(n,k){let s=`<svg viewBox="0 0 252 46" role="img" aria-label="Rectangle split into ${n} equal parts">`;const w=240/n;for(let i=0;i<n;i++)s+=`<rect class="pie${i<k?' on':''}" x="${f1(6+i*w)}" y="6" width="${f1(w)}" height="34"/>`;return s+'</svg>'}
+function gridSVG(k){let s='<svg viewBox="0 0 156 156" role="img" aria-label="Square split into 100 equal parts">';for(let i=0;i<100;i++){const r=Math.floor(i/10),c=i%10;s+=`<rect class="pie${i<k?' on':''}" x="${3+c*15}" y="${3+r*15}" width="15" height="15"/>`}return s+'</svg>'}
+function segSVG(ab,bc,showAB,showBC,showAC,u){
+  const T=ab+bc,x=v=>16+228*v/T,xa=x(0),xb=x(ab),xc=x(T);const lab=(x1,x2,t,y)=>t?`<text x="${f1((x1+x2)/2)}" y="${y}" text-anchor="middle">${t}</text>`:'';
+  return `<svg viewBox="0 0 260 92" role="img" aria-label="Segment AC with point B"><line class="nl" x1="${xa}" y1="46" x2="${xc}" y2="46"/>
+  ${[xa,xb,xc].map(X=>`<line class="tick big" x1="${f1(X)}" x2="${f1(X)}" y1="38" y2="54"/>`).join('')}
+  ${['A','B','C'].map((L,i)=>`<text class="ptl" x="${f1([xa,xb,xc][i])}" y="72" text-anchor="middle">${L}</text>`).join('')}
+  ${lab(xa,xb,showAB?ab+' '+u:'',30)}${lab(xb,xc,showBC?bc+' '+u:'',30)}${showAC?`<text x="130" y="88" text-anchor="middle">AC = ${T} ${u}</text>`:''}</svg>`;
+}
+function linesSVG(kind){const a=kind==='par'?'<line class="nl" x1="30" y1="30" x2="230" y2="30"/><line class="nl" x1="30" y1="70" x2="230" y2="70"/>'
+  :kind==='perp'?'<line class="nl" x1="30" y1="50" x2="230" y2="50"/><line class="nl" x1="130" y1="6" x2="130" y2="94"/>'
+  :'<line class="nl" x1="40" y1="90" x2="220" y2="12"/><line class="nl" x1="30" y1="40" x2="230" y2="66"/>';return `<svg viewBox="0 0 260 100" role="img" aria-label="Two lines">${a}</svg>`}
+// column-by-column notes for + / − of two numbers given as integers with p decimal places (or whole numbers p=0)
+function colNotes(a,b,p,op,money){
+  const names=money?['pennies','dimes','dollars','ten-dollars','hundred-dollars']:(p===2?['hundredths','tenths','ones','tens','hundreds']:p===1?['tenths','ones','tens','hundreds']:['ones','tens','hundreds','thousands']);
+  const da=String(a).split('').reverse().map(Number),db=String(b).split('').reverse().map(Number),out=[];
+  if(op==='-'){let br=0;for(let i=0;i<db.length;i++){const top=(da[i]||0)-br;if(top<(db[i]||0)){out.push(`In the ${names[i]} column, ${top} is less than ${db[i]}, so exchange 1 from the ${names[i+1]} column for 10 ${names[i]}.`);br=1}else br=0}
+    return out.length?out.join(' '):'No exchanging is needed: every top digit is big enough.'}
+  let c=0;for(let i=0;i<Math.max(da.length,db.length);i++){const s=(da[i]||0)+(db[i]||0)+c;if(s>=10){out.push(`The ${names[i]} column makes 10 or more, so carry 1 to the ${names[i+1]} column.`);c=1}else c=0}
+  return out.length?out.join(' '):'No column makes 10 or more, so nothing to carry.';
+}
+function noRegPair(nd,op){ // two numbers with nd digits, no carrying/borrowing
+  let a='',b='';for(let i=0;i<nd;i++){if(op==='+'){const x=R(i===0?1:0,8),y=R(i===0?1:0,9-x);a+=x;b+=y}else{const x=R(i===0?2:0,9),y=R(i===0?1:0,x-(i===0?1:0));a+=x;b+=y}}
+  return [+a,+b];
+}
+const CMP=['&lt;','&gt;','='];
+function cmpQ(lhs,rhs,A,B,o){const sign=A===B?2:A>B?1:0;return Object.assign({kind:'choice',ask:'Compare. Choose <, >, or =.',html:`${lhs} <span class="circ">◯</span> ${rhs}`,choices:CMP.slice(),correct:sign,show:['<','>','='][sign]},o)}
+const KD=()=>kid();
+
+const UG={
+'M2':{name:'Multiplying by a Two-Digit Number',book:'Extra practice',
+ c:'',
+ gen(L){let a,b;
+  if(L<=2){a=R(12,49);b=R(1,9)*10}else if(L<=4){a=R(12,49);b=R(11,19)}else if(L<=7){a=R(21,99);b=R(21,99)}else{a=R(101,499);b=R(12,49)}
+  if(b%10===0&&L>2)b++;
+  const o=b%10,t=b-o;
+  if(o===0)return {ask:'Multiply.',html:V(a,'×',b),txt:`${a} × ${b}`,ans:Q(a*b),skill:'Multiplying by tens',
+    ex:HOW(`${b} is ${b/10} tens. Multiply ${a} × ${b/10}, then write a 0 at the end.`),ex2:`First find ${a} × ${b/10}. Then attach one zero.`};
+  return {ask:'Multiply.',html:V(a,'×',b),txt:`${a} × ${b}`,ans:Q(a*b),skill:'Multiplying by a two-digit number',
+    ex:HOW(`Multiply in two rows. First row: ${a} × ${o} (the ones digit). Second row: ${a} × ${t} — write a 0 in the ones place first, then multiply by ${t/10}. Then add the two rows.`),
+    ex2:'Carry carefully in each row. Line the rows up by place value, then add them.'};
+ }},
+'D1':{name:'Dividing a Two-Digit Number by a One-Digit Number',book:'Extra practice',
+ c:'',
+ gen(L){let d,q,r=0;
+  if(L<=3){d=R(2,4);q=R(1,Math.floor(9/d))*10+R(0,Math.floor(9/d))}else if(L<=6){d=R(2,6);q=R(11,Math.floor(99/d))}else{d=R(2,9);q=R(10,Math.floor(98/d));r=R(1,d-1);if(d*q+r>99){q--}}
+  const n=d*q+r;
+  return {kind:'rem',ask:r?'Use long division. If there is a remainder, type it like 23 R 4.':'Use long division.',html:LD(n,d),txt:`${n} ÷ ${d}`,qt:q,r,show:r?`${q} R ${r}`:String(q),skill:r?'Two-digit ÷ one-digit with a remainder':'Two-digit ÷ one-digit',
+    ex:HOW(`Divide the tens first: how many ${d}s fit in ${Math.floor(n/10)}? Write it above the tens. Multiply, subtract, then bring down the ones digit and divide again. (Divide, Multiply, Subtract, Bring down.)`),
+    ex2:`Check: your answer × ${d}${r?' + the remainder':''} should equal ${n}. A remainder must be less than ${d}.`};
+ }},
+'I4':{name:'Tenths and Hundredths',book:'Investigation 4',
+ c:`<p>A dollar is 100 cents, so each coin is part of a dollar: a dime is 1/10 ($0.10), a penny is 1/100 ($0.01).</p>
+ <p>The first place after the decimal point is <b>tenths</b>. The second place is <b>hundredths</b>.</p>
+ <div class="formula">7/10 = 0.7 &nbsp;·&nbsp; 25/100 = 0.25 &nbsp;·&nbsp; 50/100 = 1/2 = 0.50</div>
+ <p>When you read a decimal, the word <b>"and"</b> means the decimal point: 3.12 is "three <b>and</b> twelve hundredths."</p>`,
+ gen(L){const t=pick(L<=3?['coin','coin','shade10','placeT','fracDec10','words1']:L<=6?['coin','shade100','fracDec','words','cmp','placeT','coinMix']:['words','cmp','order','fracDec','decFrac','shade100','coinMix','order']);
+  if(t==='coin'){const c=pick([['penny','pennies',100,1],['nickel','nickels',20,5],['dime','dimes',10,10],['quarter','quarters',4,25],['half-dollar','half-dollars',2,50]]);const k=R(1,Math.min(c[2]-1,9));
+    if(Math.random()<.5||L<=2)return {ask:`${Cap(W(k))} ${k===1?c[0]:c[1]} ${k===1?'is':'are'} what fraction of a dollar?`,html:'',ans:Q(k,c[2]),fr:true,show:`${k}/${c[2]}`,skill:'Coins as fractions of a dollar',
+      ex:HOW(`A dollar is 100 cents. Find how many ${c[1]} make one dollar: that number goes on the <b>bottom</b> of the fraction. The number of ${c[1]} you have goes on the <b>top</b>.`),
+      ex2:`One ${c[0]} is ${c[3]}¢. Count by ${c[3]}s up to 100 and count how many you said. That is the bottom number.`};
+    return {ask:`Write the value of ${W(k)} ${k===1?c[0]:c[1]} with a dollar sign and a decimal point.`,html:'',ans:Q(k*c[3],100),dec:true,money:true,show:$c(k*c[3]),skill:'Coins as decimal parts of a dollar',
+      ex:HOW(`Find the value in cents first (one ${c[0]} is ${c[3]}¢). Then write cents as dollars: $0. and two digits for the cents.`),
+      ex2:`Multiply ${k} × ${c[3]}¢. If the cents are less than 10, write a 0 in the dimes place, like $0.05.`}}
+  if(t==='coinMix'){const q=R(0,3),d=R(1,5),n=R(0,3),p=R(0,4),cents=25*q+10*d+5*n+p;const parts=[[q,'quarter'],[d,'dime'],[n,'nickel'],[p,'penny']].filter(x=>x[0]).map(([k,w])=>`${W(k)} ${k===1?w:w==='penny'?'pennies':w+'s'}`);
+    return {ask:`What is the value of ${parts.join(', ')}? Write it with a dollar sign.`,html:'',ans:Q(cents,100),dec:true,money:true,show:$c(cents),skill:'Coins as decimal parts of a dollar',
+      ex:HOW('Add the coins in cents: quarter 25¢, dime 10¢, nickel 5¢, penny 1¢. Then write the cents as dollars with two digits after the decimal point.'),ex2:'Start with the coins worth the most and count up. Then write $0. followed by the cents.'}}
+  if(t==='shade10'){const k=R(2,9);return {ask:'What decimal number names the shaded part of the rectangle?',html:'',fig:stripSVG(10,k),note:`${k} of 10 parts shaded`,ans:Q(k,10),dec:true,show:dstr(k,1),skill:'Shaded tenths',
+      ex:HOW('The rectangle is split into 10 equal parts, so each part is one tenth (0.1). Count the shaded parts.'),ex2:'Write 0, then a decimal point, then the number of shaded parts in the tenths place.'}}
+  if(t==='shade100'){const k=R(3,97);return {ask:'What decimal number names the shaded part of the square?',html:'',fig:gridSVG(k),note:`${k} of 100 squares shaded`,ans:Q(k,100),dec:true,show:dstr(k,2),skill:'Shaded hundredths',
+      ex:HOW('The square is split into 100 equal parts, so each small square is one hundredth (0.01). Each full row is 10 hundredths, which is one tenth.'),
+      ex2:'Count the full rows: that digit goes in the tenths place. Count the extra small squares: that digit goes in the hundredths place. Start with 0 and a decimal point.'}}
+  if(t==='fracDec'||t==='fracDec10'){const d=t==='fracDec10'||Math.random()<.4?10:100,n=R(1,d-1);return {ask:'Write this fraction as a decimal number.',html:F(n,d),ans:Q(n,d),dec:true,show:dstr(n,d===10?1:2),txt:`Write ${n}/${d} as a decimal`,skill:'Fractions to decimals',
+      ex:HOW('Tenths use one place after the decimal point. Hundredths use two places. Count the zeros in the bottom number: that is how many digits go after the decimal point.'),
+      ex2:d===100?'Hundredths need two digits after the decimal point. If the top number has only one digit, write a 0 in the tenths place first.':'Write 0, a decimal point, then the top number in the tenths place.'}}
+  if(t==='decFrac'){const o=pick([[5,10],[25,100],[75,100],[3,10],[9,10],[45,100],[7,100],[50,100]]),p=o[1]===10?1:2;return {ask:`Write ${dstr(o[0],p)} as a fraction.`,html:'',ans:Q(o[0],o[1]),fr:true,show:`${o[0]}/${o[1]}`,skill:'Decimals to fractions',
+      ex:HOW('Read the decimal out loud. One digit after the point means tenths (bottom number 10). Two digits after the point means hundredths (bottom number 100). The digits after the point go on top.'),ex2:'You may leave the fraction as tenths or hundredths, or reduce it. Both are right.'}}
+  if(t==='words1'||t==='words'){const d=t==='words1'?10:pick([10,100,100]),n=R(1,d-1),w=t==='words1'?R(0,9):R(0,L*4);
+    const txt=(w?W(w)+' and ':'')+fracWords(n,d);return {ask:'Use digits to write this decimal number.',html:txt,wordy:true,ans:Q(w*d+n,d),dec:true,show:(w+n/d).toFixed(d===10?1:2),skill:'Writing decimals from words',
+      ex:HOW('The word "and" means the decimal point. Write the whole number before it (or 0 if there is no whole number). "Tenths" means one digit after the point. "Hundredths" means two digits after the point.'),
+      ex2:d===100&&n<10?'For hundredths you need two digits after the decimal point. Since the number of hundredths is less than ten, write a 0 in the tenths place.':'Write the whole number, the decimal point, then the number of tenths or hundredths.'}}
+  if(t==='placeT'){const v=R(101,999),pl=pick(['tenths','hundredths']),s=dstr(v,2);return {ask:`Which digit in ${s} is in the ${pl} place?`,html:'',ans:Q(+(pl==='tenths'?s[s.length-2]:s[s.length-1])),skill:'Decimal place value',
+      ex:HOW('The first place to the right of the decimal point is the tenths place. The second place to the right is the hundredths place.'),ex2:'Put your finger on the decimal point and move right one place (tenths) or two places (hundredths).'}}
+  if(t==='cmp'){const A=R(1,99);let B;const m=R(0,2);B=m===0?Math.round(A/10)*10||10:m===1?R(1,99):A;if(m===0&&B===A)B=A+(A<90?R(1,8):-R(1,8));
+    const fa=A%10===0&&Math.random()<.6?dstr(A/10,1):dstr(A,2),fb=B%10===0&&Math.random()<.7?dstr(B/10,1):dstr(B,2);
+    return cmpQ(fa,fb,A,B,{skill:'Comparing decimals',ex:HOW('Line up the decimal points. If one number has fewer digits, write a 0 in the empty place so both have two digits, like money: 0.5 is the same as $0.50. Then compare tenths first, then hundredths.'),ex2:`Think of both as money: $${fa.length===3?fa+'0':fa} and $${fb.length===3?fb+'0':fb}. Which is more cents?`})}
+  // order stopwatch times
+  const base=R(10,14),set=new Set();while(set.size<4){set.add(base*100+pick([R(0,9)*10,R(0,99),R(0,99)]))}const arr=[...set],least=Math.min(...arr),most=Math.max(...arr),fast=Math.random()<.6;
+  const fmt=v=>v%10===0&&Math.random()<.5?dstr(v/10,1):dstr(v,2);const lab=arr.map(fmt);
+  return {kind:'choice',ask:`Four students ran a race. Their stopwatch times are below in seconds. Which time is the ${fast?'fastest (the least time)':'slowest (the most time)'}?`,html:'',choices:lab.map(x=>x+' sec'),correct:arr.indexOf(fast?least:most),show:lab[arr.indexOf(fast?least:most)]+' seconds',skill:'Ordering decimals (stopwatch times)',
+    ex:HOW('Compare the whole seconds first. If they are the same, compare the tenths, then the hundredths. Write a 0 in any empty hundredths place so every time has two digits after the point.'),ex2:fast?'The fastest runner has the <b>least</b> time.':'The slowest runner has the <b>most</b> time.'};
+ }},
+'41':{name:'Subtracting Across Zero and Missing Factors',book:'Lesson 41',
+ c:`<p>When the top number has zeros, you <b>regroup twice</b>: exchange 1 hundred for 10 tens, then exchange 1 ten for 10 ones.</p>
+ ${EXB('Another way','<p>Think of $405 as 40 tens and 5 ones. Take 1 ten from 40 tens: 39 tens, and the ones become 15.</p>')}
+ <p>For money like $3.00 − $1.23: change 3 dollars into 2 dollars and 10 dimes, then change 1 dime into 10 pennies (2 dollars, 9 dimes, 10 pennies). Check by adding.</p>
+ <div class="formula">Factor × Factor = Product &nbsp;·&nbsp; 5n = 40 means 5 × n = 40</div>`,
+ gen(L){const t=L<=4?pick(['sub','mf','mf']):L<=7?pick(['sub','mf','mf','money']):pick(['sub','money','mf','word','sub4']);
+  if(t==='mf')return mfQ(L);
+  if(t==='money'){const A=R(2,L<=8?5:9)*100+(Math.random()<.3?R(1,9):0),B=R(101,A-50);const bp=B%10,bd=Math.floor(B/10)%10;
+    return {ask:'Subtract. Then check by adding.',html:V($c(A),'−',$c(B)),ans:Q(A-B,100),dec:true,money:true,show:$c(A-B),txt:`${$c(A)} − ${$c(B)}`,skill:'Subtracting money across zeros',
+      ex:HOW(`Line up the decimal points. There are not enough pennies or dimes on top, so change 1 dollar into 10 dimes, then change 1 dime into 10 pennies.`),
+      ex2:`${$c(A)} becomes ${Math.floor(A/100)-1} dollars, 9 dimes, and ${10+A%10} pennies. Now subtract pennies, then dimes, then dollars. Check: your answer + ${$c(B)} should equal ${$c(A)}.`}}
+  if(t==='sub4'){const th=R(2,9),o=R(0,5),A=th*1000+o,B=R(1001,A-100);
+    return {ask:'Subtract. Then check by adding.',html:V(A,'−',B),ans:Q(A-B),show:N(A-B),txt:`${A} − ${B}`,skill:'Subtracting across zeros',
+      ex:HOW(`There are zeros in the hundreds and tens places. Think of ${A} as ${(A-o)/10} tens and ${o} ones. Take 1 ten away from the tens.`),
+      ex2:`${A} becomes ${(A-o)/10-1} tens and ${o+10} ones. So the digits on top are now ${th-1}, 9, 9, ${o+10}. Subtract each column. Check by adding your answer to ${B}.`}}
+  if(t==='word'){const k=KD(),A=R(4,9)*100+R(0,9),B=R(101,A-60);const k2=KD();
+    return {ask:'Word problem',html:`${k.n} read ${N(A)} minutes. ${k2.n===k.n?'Lina':k2.n} read ${N(B)} minutes. How many more minutes did ${k.n} read?`,wordy:true,ans:Q(A-B),show:N(A-B),skill:'Comparing word problems (subtract across zero)',
+      ex:HOW('"How many more" is a comparing story: Larger − Smaller = Difference. When the larger number has a zero, regroup twice.'),ex2:`Write ${A} − ${B}. Exchange 1 hundred for 10 tens, then 1 ten for 10 ones.`}}
+  // 3-digit across zero
+  let h,o,A,B;if(L<=6){h=R(2,5);o=R(0,8);A=h*100+o;const bo=R(o+1,9);B=R(1,h-1)*100+R(1,9)*10+bo}else{h=R(2,9);A=h*100;B=R(101,A-11);if(B%10===0)B++;o=0}
+  return {ask:'Subtract. Then check by adding.',html:V(A,'−',B),ans:Q(A-B),show:N(A-B),txt:`${A} − ${B}`,skill:'Subtracting across zeros',
+    ex:HOW(`You cannot take ${B%10} ones from ${o} ones, and there are 0 tens to trade. So regroup twice: exchange 1 hundred for 10 tens, then exchange 1 ten for 10 ones. (Or think of ${A} as ${(A-o)/10} tens and ${o} ones.)`),
+    ex2:`After regrouping, ${A} is ${h-1} hundreds, 9 tens, and ${o+10} ones. Now subtract the ones, then the tens, then the hundreds. Check: your answer + ${B} should equal ${A}.`};
+ }},
+'42':{name:'Rounding Numbers to Estimate',book:'Lesson 42',
+ c:`<p>To multiply a multiple of 10 or 100, multiply the first digits, then attach the zeros: 4 × 30 → 4 × 3 = 12 → 120.</p>
+ <p>To <b>round</b>, find the two tens (or hundreds) the number is between on a number line and the halfway number. At halfway or past it, round up. Before halfway, round down.</p>
+ <p>Shortcut: look at the digit just to the right of the place you are rounding to. 5 or more → round up. Less than 5 → round down.</p>
+ ${EXB('Estimate','<p>To estimate 9 × 44, round to 10 × 40 = 400. To estimate a sum, round each number first, then add.</p>')}`,
+ gen(L){const t=pick(L<=2?['mt','r10','r10','mt']:L<=4?['mt','r10','r100','est','r100']:L<=7?['r100','est','estS','money','mt','estP']:['est','estS','money','estP','word','r100']);
+  if(t==='mt'){const a=R(2,9),b=R(2,9),z=L<=3?1:pick([1,2]);const m=b*10**z;return {ask:'Multiply.',html:`${a} × ${m}`,ans:Q(a*m),skill:'Multiplying multiples of 10 and 100',
+      ex:HOW(`Multiply the first digits, ${a} × ${b}. Then attach ${z===1?'one zero':'two zeros'}, because ${m} has ${z===1?'one zero':'two zeros'} at the end.`),ex2:`Find ${a} × ${b} with your facts, then write the zeros after it.`}}
+  if(t==='r10'){const n=L<=2?R(11,99):R(101,999);if(n%10===0)return this.gen(L);return {ask:`Round ${N(n)} to the nearest ten.`,html:'',ans:Q(r10(n)),skill:'Rounding to the nearest ten',
+      ex:HOW(`Find the two tens that ${N(n)} is between on a number line, and the halfway number between them. If ${N(n)} is at halfway or past it, round up. If it is before halfway, round down.`),
+      ex2:'Look at the ones digit. If it is 5 or more, round up to the next ten. If it is less than 5, round down. The ones digit becomes 0.'}}
+  if(t==='r100'){const n=R(101,L<=6?999:9999);if(n%100===0)return this.gen(L);return {ask:`Round ${N(n)} to the nearest hundred.`,html:'',ans:Q(r100(n)),skill:'Rounding to the nearest hundred',
+      ex:HOW(`Find the two hundreds that ${N(n)} is between on a number line. The halfway number ends in 50. At halfway or past it, round up; before halfway, round down.`),
+      ex2:'Look at the tens digit. If it is 5 or more, round up to the next hundred. If it is less than 5, round down. The tens and ones digits become 0.'}}
+  if(t==='money'){const d=R(2,30),c=R(1,99);if(c===50)return this.gen(L);const A=d*100+c;
+    return {kind:'choice',ask:`Is ${$c(A)} closer to $${d} or to $${d+1}?`,html:'',choices:[`$${d}`,`$${d+1}`],correct:c>=50?1:0,show:`$${c>=50?d+1:d}`,skill:'Rounding money to the nearest dollar',
+      ex:HOW('Look at the cents. Halfway between two dollars is 50¢. 50¢ or more is closer to the higher dollar; less than 50¢ is closer to the lower dollar.'),ex2:`Is ${c}¢ more or less than 50¢?`}}
+  if(t==='est'||t==='estS'){const sub=t==='estS';let a=R(110,899),b=R(110,899);if(sub&&b>a)[a,b]=[b,a];if(sub&&r100(a)===r100(b))a+=200;
+    if(a%100===50||b%100===50)return this.gen(L);const ra=r100(a),rb=r100(b);
+    return {ask:`Estimate ${sub?'the difference':'the sum'}. Round each number to the nearest hundred, then ${sub?'subtract':'add'}.`,html:`${a} ${sub?'−':'+'} ${b}`,ans:Q(sub?ra-rb:ra+rb),skill:sub?'Estimating differences by rounding':'Estimating sums by rounding',
+      ex:HOW(`Round first, then ${sub?'subtract':'add'}. Do not work out the exact answer: an estimate uses the rounded numbers.`),ex2:`Round ${a} to the nearest hundred (look at its tens digit). Round ${b} the same way. Then ${sub?'subtract':'add'} the two rounded numbers.`}}
+  if(t==='estP'){const a=R(12,98),b=R(3,9);if(a%10===5||a%10===0)return this.gen(L);return {ask:`Estimate the product. Round ${a} to the nearest ten, then multiply.`,html:`${b} × ${a}`,ans:Q(b*r10(a)),skill:'Estimating products',
+      ex:HOW('Round the two-digit number to the nearest ten. Then multiply the first digits and attach the zero.'),ex2:`Round ${a}: look at its ones digit. Then multiply ${b} by your rounded number.`}}
+  const s=[['hammerhead shark','porbeagle shark','pounds'],['elephant seal','walrus','pounds'],['first train','second train','passengers']][R(0,2)],a=R(610,990),b=R(210,590);if(a%100===50||b%100===50||r100(a)===r100(b))return this.gen(L);
+  return {ask:'Estimate',html:`A ${s[0]} weighs ${a} ${s[2]}. A ${s[1]} weighs ${b} ${s[2]}. Round each number to the nearest hundred to estimate the difference.`,wordy:true,ans:Q(r100(a)-r100(b)),skill:'Estimating differences by rounding',
+    ex:HOW('Round each number to the nearest hundred first. Then subtract the rounded numbers to find about how much more.'),ex2:`Round ${a} and ${b} (look at the tens digit of each). Then subtract.`};
+ }},
+'43':{name:'Adding and Subtracting Decimal Numbers, Part 1',book:'Lesson 43',
+ c:`<p>When adding or subtracting decimal numbers, <b>line up the decimal points</b>. Then add or subtract digits in the same place, starting from the right.</p>
+ <p>Write every amount of money the same way before you start: $2 is $2.00, and 15¢ is $0.15.</p>
+ ${EXB('Example','<p>3.47 − 3.41: line up the points, subtract hundredths, then tenths, then ones. Bring the decimal point straight down.</p>')}`,
+ gen(L){const t=pick(L<=3?['m','m','t']:L<=6?['m','m','t','mixed']:['m','mixed','word','three','t']);
+  const ex1=(op,money)=>HOW(`Line up the decimal points. ${op==='+'?'Add':'Subtract'} the digits in each column, starting on the right. Bring the decimal point straight down into the answer${money?' and write the dollar sign':''}.`);
+  if(t==='m'||t==='t'){const p=t==='m'?2:1,money=t==='m',op=Math.random()<.5?'+':'-';let a,b;
+    if(L<=6){[a,b]=noRegPair(p+1,op)}else{a=R(10**p,10**(p+1)-1);b=R(10**(p-1),op==='-'?a-1:10**(p+1)-1)}
+    const fa=money?$c(a):dstr(a,p),fb=money?$c(b):dstr(b,p),res=op==='+'?a+b:a-b;
+    return {ask:op==='+'?'Add.':'Subtract.',html:V(fa,op==='+'?'+':'−',fb),txt:`${fa} ${op==='+'?'+':'−'} ${fb}`,ans:Q(res,10**p),dec:true,money,show:money?$c(res):dstr(res,p),skill:money?(op==='+'?'Adding money':'Subtracting money'):(op==='+'?'Adding decimals':'Subtracting decimals'),
+      ex:ex1(op,money),ex2:colNotes(a,b,p,op==='+'?'+':'-',money)}}
+  if(t==='mixed'){const d=R(1,9)*100+R(0,99),c=R(5,95),w=R(1,9);return {ask:'Add.',html:`${$c(d)} + ${c}¢ + $${w}`,ans:Q(d+c+w*100,100),dec:true,money:true,show:$c(d+c+w*100),skill:'Adding money written different ways',
+      ex:HOW('First write every amount with a dollar sign and two digits after the decimal point. Then line up the decimal points and add.'),ex2:`${c}¢ is $0.${pad(c)} and $${w} is $${w}.00. Now line up all three and add.`}}
+  if(t==='three'){const xs=[R(11,99),R(11,99),R(11,99)];return {ask:'Add.',html:xs.map(x=>dstr(x,1)).join(' + '),ans:Q(xs[0]+xs[1]+xs[2],10),dec:true,show:dstr(xs[0]+xs[1]+xs[2],1),skill:'Adding decimals',
+      ex:ex1('+',false),ex2:'Write the three numbers in a column with the decimal points lined up. Add the tenths first and carry if they make 10 or more.'}}
+  const k=KD(),a=R(150,999),tx=R(10,95);return {ask:'Word problem',html:`${k.n} bought a book for ${$c(a)}. The tax was ${tx}¢. What was the total price?`,wordy:true,ans:Q(a+tx,100),dec:true,money:true,show:$c(a+tx),skill:'Money word problems',
+    ex:HOW('Total price = price + tax. Write the tax with a dollar sign first, then line up the decimal points and add.'),ex2:`${tx}¢ = $0.${pad(tx)}. Add it to ${$c(a)}.`};
+ }},
+'44':{name:'Multiplying Two-Digit Numbers, Part 1',book:'Lesson 44',
+ c:`<p>To multiply a two-digit number, multiply the <b>ones digit first</b> and write it below the ones. Then multiply the <b>tens digit</b> and write it in front.</p>
+ ${EXB('Example',`<p>${V(21,'×',6)} Six times one is 6. Six times two tens is 12 tens. The answer is 126.</p>`)}`,
+ gen(L){const t=L>=5&&Math.random()<.3?'word':L>=8&&Math.random()<.4?'money':L>=9?'three':'two';
+  const mkAB=(maxT)=>{const m=R(2,L<=3?4:9),o=R(0,Math.floor(9/m)),tt=R(1,maxT);return [tt*10+o,m]};
+  if(t==='word'){let e,g;do{[e,g]=mkAB(9)}while(e<11);const k=pick([[`Each of the ${g} boats carried ${e} people. How many people were in all the boats?`],[`There were ${e} chairs in each row. There were ${g} rows. How many chairs were there in all?`],[`Each box holds ${e} crayons. How many crayons are in ${g} boxes?`]])[0];
+    return {ask:'Word problem',html:k,wordy:true,ans:Q(e*g),skill:'Equal groups: multiply',ex:HOW('This is an equal groups story. Number of groups × number in each group = total. Then multiply the ones digit first, then the tens digit.'),ex2:`Write ${e} × ${g} in a column. Multiply ${g} × ${e%10} ones, then ${g} × ${Math.floor(e/10)} tens.`}}
+  if(t==='three'){const m=R(2,3),ds=[R(1,Math.floor(9/m)),R(0,Math.floor(9/m)),R(0,Math.floor(9/m))],a=+ds.join('');
+    return {ask:'Multiply.',html:V(a,'×',m),txt:`${a} × ${m}`,ans:Q(a*m),skill:'Multiplying without regrouping',ex:HOW('Multiply the ones digit first, then the tens digit, then the hundreds digit. Write each answer under its own place.'),ex2:`${m} × ${ds[2]} ones, then ${m} × ${ds[1]} tens, then ${m} × ${ds[0]} hundreds.`}}
+  const [a,m]=mkAB(9),money=t==='money';const fa=money?'$'+a:a;
+  return {ask:'Multiply.',html:V(fa,'×',m),txt:`${fa} × ${m}`,ans:Q(a*m),money,show:money?'$'+a*m:N(a*m),skill:'Multiplying a two-digit number',
+    ex:HOW(`Multiply the ones digit first: ${m} × ${a%10} ones. Write that below the ones place. Then multiply the tens digit: ${m} × ${Math.floor(a/10)} tens. Write that to the left.${money?' Put a dollar sign in front of the answer.':''}`),
+    ex2:`${m} × ${Math.floor(a/10)} tens means tens. If it is 10 or more tens, the first digit goes in the hundreds place.`};
+ }},
+'45':{name:'Parentheses, the Associative Property, and Naming Lines and Segments',book:'Lesson 45',
+ c:`<p><b>Parentheses</b> show which part to do first: 12 − (4 − 3) → 12 − 1 = 11.</p>
+ <p>Changing the grouping does not change the answer when you only add, or only multiply. This is the <b>Associative Property</b>: 5 + (4 + 2) = (5 + 4) + 2. It does not work for subtraction.</p>
+ <p>A <b>segment</b> is part of a line with two endpoints. If B is on segment AC, then AB + BC = AC. <b>Parallel</b> lines never meet. <b>Perpendicular</b> lines meet at square corners.</p>`,
+ gen(L){const t=pick(L<=2?['par','par','seg']:L<=5?['par','seg','cmp','lines']:['par','cmp','seg','lines','par3']);
+  if(t==='par'||t==='par3'){const f=t==='par3'?R(0,2):R(0,3);let html,ans,first,then;
+    if(f===0){const c=R(1,9),b=R(c+1,c+12),a=R(b,b+15);html=`${a} − (${b} − ${c})`;ans=a-(b-c);first=`${b} − ${c}`;then=`subtract that answer from ${a}`}
+    else if(f===1){const c=R(1,9),b=R(1,12),a=R(b+c+1,30);html=`(${a} − ${b}) − ${c}`;ans=a-b-c;first=`${a} − ${b}`;then=`subtract ${c} from that answer`}
+    else if(f===2){const b=R(2,9),c=R(2,10),a=R(10,99);html=Math.random()<.5?`${a} + (${b} × ${c})`:`(${b} × ${c}) + ${a}`;ans=a+b*c;first=`${b} × ${c}`;then=`add ${a}`}
+    else{const b=R(2,9),c=R(2,9),a=R(b*c+1,b*c+40);html=`${a} − (${b} × ${c})`;ans=a-b*c;first=`${b} × ${c}`;then=`subtract that answer from ${a}`}
+    return {ask:'Simplify. Do the part in parentheses first.',html,ans:Q(ans),skill:'Parentheses (order of operations)',ex:HOW('Do the work inside the parentheses first. Write that answer in place of the parentheses. Then finish the problem.'),ex2:`First find ${first}. Then ${then}.`}}
+  if(t==='cmp'){const op=pick(['+','×','−']);let x,y,z;if(op==='−'){x=R(15,30);y=R(4,12);z=R(1,y-1)}else{x=R(2,9);y=R(2,9);z=R(2,9)}
+    const f=(a,b)=>op==='+'?a+b:op==='×'?a*b:a-b,A=f(x,f(y,z)),B=f(f(x,y),z);
+    return cmpQ(`${x} ${op} (${y} ${op} ${z})`,`(${x} ${op} ${y}) ${op} ${z}`,A,B,{skill:'Associative property (compare)',ex:HOW('Find the value of each side by itself. Do the parentheses first on each side. Then compare the two numbers.'),ex2:`Left side: first ${y} ${op} ${z}. Right side: first ${x} ${op} ${y}.`})}
+  if(t==='lines'){const kd=pick(['par','perp','int']);const names=['parallel','perpendicular','intersecting (not perpendicular)'];
+    return {kind:'choice',ask:'What kind of lines are shown?',html:'',fig:linesSVG(kd),note:'two lines',choices:names.map(WT),correct:['par','perp','int'].indexOf(kd),show:names[['par','perp','int'].indexOf(kd)],skill:'Parallel and perpendicular lines',
+      ex:HOW('Parallel lines go the same direction and never meet, like railroad tracks. Perpendicular lines cross and make square corners. Intersecting lines cross, but not always at square corners.'),ex2:'Do the lines cross? If they do, do they make a square corner like the corner of a paper?'}}
+  const u=pick(['cm','in.','m']),ab=R(2,L<=3?9:25),bc=R(2,L<=3?9:25),m=R(0,2);
+  if(m===0)return {ask:`The length of segment AB is ${ab} ${u}. The length of segment BC is ${bc} ${u}. What is the length of segment AC?`,html:'',fig:segSVG(ab,bc,1,1,0,u),note:'segment AC with point B',ans:Q(ab+bc),skill:'Segment lengths',
+    ex:HOW('Segment AC is made of two parts, AB and BC. Part + part = whole.'),ex2:`Put the two parts together: ${ab} ${u} and ${bc} ${u}.`};
+  const knowAB=m===1;return {ask:`Segment AC is ${ab+bc} ${u} long. Segment ${knowAB?'AB':'BC'} is ${knowAB?ab:bc} ${u}. What is the length of segment ${knowAB?'BC':'AB'}?`,html:'',fig:segSVG(ab,bc,knowAB,!knowAB,1,u),note:'segment AC with point B',ans:Q(knowAB?bc:ab),skill:'Segment lengths',
+    ex:HOW('The whole segment AC is made of two parts. When you know the whole and one part, subtract to find the other part.'),ex2:`Whole − part you know: ${ab+bc} − ${knowAB?ab:bc}.`};
+ }},
+'46':{name:'Relating Multiplication and Division, Part 1',book:'Lesson 46',
+ c:`<p>Multiplication problems have three numbers: <b>factor × factor = product</b>. If we know one factor and the product, we can find the other factor by <b>dividing</b>. Division "undoes" multiplication.</p>
+ <p>Use the multiplication table: find the row that starts with the factor you know, go across to the product, then look up to the top of that column.</p>
+ ${EXB('Division box',`<p>${LD(12,3)} &nbsp; We say, "Twelve divided by three is four." The answer goes above the box.</p>`)}`,
+ gen(L){const t=pick(L<=3?['box','box','mf']:L<=6?['box','mf','read','word']:['box','word','mf','inv','word']);
+  const big=L<=3?5:L<=6?9:12;
+  if(t==='mf')return mfQ(L);
+  if(t==='read'){const d=R(2,9),q=R(2,9),n=d*q;return {kind:'choice',ask:'How do we read this?',html:LD(n,d),txt:`How do we read ${d})${n}?`,choices:[`${Cap(W(n))} divided by ${W(d)}`,`${Cap(W(d))} divided by ${W(n)}`,`${Cap(W(d))} times ${W(n)}`].map(WT),correct:0,show:`${Cap(W(n))} divided by ${W(d)}`,skill:'Reading a division box',
+      ex:HOW('The number inside the division box is the number being divided. We say it first: "___ divided by ___."'),ex2:'Which number is inside the box?'}}
+  if(t==='word'){const d=R(2,big),q=R(2,big),n=d*q,k=Math.random()<.5;
+    return {ask:'Word problem',html:k?`A teacher divided ${n} students into ${d} equal groups. How many students were in each group?`:`There are ${n} students. They line up in rows of ${d}. How many rows are there?`,wordy:true,ans:Q(q),skill:'Division word problems',
+      ex:HOW('Equal groups: number of groups × number in each group = total. You know the total and one of the numbers, so divide the total by the number you know.'),ex2:`Think: "${d} times what number is ${n}?"`}}
+  if(t==='inv'){const d=R(3,12),q=R(3,12),n=d*q;return {ask:`What multiplication fact undoes ${n} ÷ ${d}? Fill in the blank.`,html:`${d} × ${blk(4)} = ${n}`,kind:'blanks',ans:[Q(q)],show:String(q),txt:`${d} × __ = ${n}`,skill:'Multiplication and division are inverses',
+      ex:HOW('Division undoes multiplication. The answer to the division is the missing factor in the multiplication.'),ex2:`Count by ${d}s until you reach ${n}. How many ${d}s did you count?`}}
+  const d=R(2,big),q=R(2,big),n=d*q;
+  return {ask:'Divide.',html:LD(n,d),txt:`${n} ÷ ${d}`,ans:Q(q),skill:'Division facts (division box)',
+    ex:HOW(`Think: "${d} times what number is ${n}?" On the multiplication table, find the row that starts with ${d}, go across until you see ${n}, then look up to the top of that column. That number goes above the box.`),
+    ex2:`Count by ${d}s: ${d}, ${2*d}, ${3*d}, … and stop when you reach ${n}. Count how many numbers you said.`};
+ }},
+'47':{name:'Relating Multiplication and Division, Part 2',book:'Lesson 47',
+ c:`<p>We can show division three ways: with a division box ${LD(15,3)}, a division sign 15 ÷ 3, or a division bar ${F(15,3)}. All three say "fifteen divided by three."</p>
+ <p>Three numbers can form a <b>fact family</b>: 3 × 4 = 12, 4 × 3 = 12, 12 ÷ 3 = 4, 12 ÷ 4 = 3.</p>
+ ${EXB('Rate table','<p>A snail moves 11 cm in 1 minute. In 12 minutes: continue the table, or multiply 11 × 12.</p>')}`,
+ gen(L){const t=pick(L<=3?['bar','fam','not','bar']:L<=6?['bar','fam','not','song','rate']:['fam','song','rate','not','bar']);
+  const big=L<=4?9:12;
+  if(t==='bar'){const d=R(2,big),q=R(2,big);return {ask:'Divide.',html:F(d*q,d),txt:`${d*q}/${d}`,ans:Q(q),skill:'Division with a division bar',
+      ex:HOW('A division bar means divide: the top number divided by the bottom number. It is the same as a division box.'),ex2:`Think: "${d} times what number is ${d*q}?"`}}
+  if(t==='not'){const d=R(2,9),q=R(3,9),n=d*q;return choiceQ([`${d} ÷ ${n}`,`${n} ÷ ${d}`,LD(n,d),F(n,d)],0,{ask:`Which of these does <b>not</b> show ${W(n)} divided by ${W(d)}?`,html:'',txt:`Which does not show ${n} divided by ${d}?`,show:`${d} ÷ ${n}`,skill:'Three ways to show division',
+      ex:HOW('With a division box, the number being divided goes inside. With a division sign (÷), the number being divided comes first. With a division bar, it goes on top.'),ex2:`The number being divided is ${n}. Find the one where ${n} is in the wrong spot.`})}
+  if(t==='fam'){const a=R(2,big),b=R(2,big);if(a===b)return this.gen(L);const p=a*b;
+    return {kind:'blanks',ask:`The numbers ${a}, ${b}, and ${p} form a fact family. Fill in each fact.`,html:`<div style="font:500 1.1rem/2.3 var(--mono)">${a} × ${b} = ${blk(4)}<br>${b} × ${a} = ${blk(4)}<br>${p} ÷ ${a} = ${blk(4)}<br>${p} ÷ ${b} = ${blk(4)}</div>`,ans:[Q(p),Q(p),Q(b),Q(a)],show:`${p}, ${p}, ${b}, ${a}`,txt:`Fact family ${a}, ${b}, ${p}`,skill:'Fact families',
+      ex:HOW('In a fact family, the two smaller numbers are the factors and the largest number is the product. Factor × factor = product. Product ÷ one factor = the other factor.'),ex2:'Each division fact uses the same three numbers. Divide the largest number by one of the smaller numbers: the answer is the other smaller number.'}}
+  if(t==='song'){const each=R(2,6),n=R(3,big),tot=each*n;return {ask:'Word problem',html:`The band played for ${tot} minutes. Each song was ${each} minutes long. How many songs did the band play?`,wordy:true,ans:Q(n),skill:'Division word problems',
+      ex:HOW('Total time ÷ time for one song = number of songs. Check with multiplication.'),ex2:`Think: "${each} times what number is ${tot}?"`}}
+  const r=R(L<=6?2:11,L<=6?9:15),m=R(4,L<=6?9:12),it=pick([['snail','cm'],['turtle','feet'],['robot','meters']]);
+  return {ask:'Rate problem',html:`A ${it[0]} moves ${r} ${it[1]} each minute. At that rate, how far will it move in ${m} minutes?<div class="qwrap"><table class="qt"><tr><th>Minutes</th><td>1</td><td>2</td><td>3</td><td>…</td><td>${m}</td></tr><tr><th>${Cap(it[1])}</th><td>${r}</td><td>${2*r}</td><td>${3*r}</td><td>…</td><td>?</td></tr></table></div>`,wordy:true,txt:`A ${it[0]} moves ${r} ${it[1]} each minute. How far in ${m} minutes?`,ans:Q(r*m),skill:'Rate tables',
+    ex:HOW('Each minute adds the same amount. You can keep going in the table, or multiply: amount in one minute × number of minutes.'),ex2:`Multiply ${r} × ${m}.`};
+ }},
+'48':{name:'Multiplying Two-Digit Numbers, Part 2',book:'Lesson 48',
+ c:`<p>Sometimes the ones make a two-digit number. Write the ones digit below the line and write the tens digit <b>above the tens column</b>. Then multiply the tens and <b>add the number you carried</b>.</p>
+ ${EXB('Example',`<p>${V(12,'×',7)} Seven times two is 14. Write 4 and carry the 1. Seven times one is 7, plus 1 is 8. The answer is 84.</p>`)}`,
+ gen(L){const t=L>=5&&Math.random()<.25?'word':L>=6&&Math.random()<.3?'money':L>=9?'three':'two';
+  let a,m;do{m=R(2,L<=2?4:9);a=R(L<=2?12:12,L<=3?49:99)}while((a%10)*m<10);
+  const carry=Math.floor((a%10)*m/10);
+  const steps=(a,m)=>{const o=a%10,c=Math.floor(o*m/10);return `${m} × ${o} = ${o*m}. Write ${(o*m)%10} below the line and carry ${c}. Then multiply ${m} × ${Math.floor(a/10)%10} and add the ${c} you carried.`};
+  const ex1=HOW('Multiply the ones first. If the answer has two digits, write the ones digit below the line and write the tens digit above the tens column. Then multiply the tens digit and add the number you carried.');
+  if(t==='word'){const it=pick([[`Each pot of soup needs ${a} carrots. How many carrots are needed for ${m} pots?`],[`There are ${a} pages in each book. How many pages are in ${m} books?`],[`A bus holds ${a} students. How many students can ${m} buses hold?`]])[0];
+    return {ask:'Word problem',html:it,wordy:true,ans:Q(a*m),skill:'Equal groups: multiply with regrouping',ex:HOW('Equal groups: number in each group × number of groups = total. Then multiply in a column, ones first, carrying when you need to.'),ex2:steps(a,m)}}
+  if(t==='three'){let b;do{b=R(112,499)}while((b%10)*m<10);return {ask:'Multiply.',html:V(b,'×',m),txt:`${b} × ${m}`,ans:Q(b*m),skill:'Multiplying with regrouping',ex:ex1,ex2:`${steps(b,m)} Keep going: multiply the hundreds digit and add anything you carried.`}}
+  const money=t==='money';return {ask:'Multiply.',html:V(money?'$'+a:a,'×',m),txt:`${money?'$'+a:a} × ${m}`,ans:Q(a*m),money,show:money?'$'+a*m:N(a*m),skill:money?'Multiplying money with regrouping':'Multiplying with regrouping',ex:ex1,ex2:steps(a,m)+(money?' Write a dollar sign in the answer.':'')};
+ }},
+'49':{name:'Word Problems About Equal Groups',book:'Lesson 49',
+ c:`<p>Stories about <b>equal groups</b> have a multiplication formula:</p>
+ <div class="formula">Number of groups × Number in each group = Total</div>
+ <p>If the total is missing, <b>multiply</b>. If the number of groups or the number in each group is missing, <b>divide</b>.</p>
+ ${EXB('Example','<p>Tyrone has 6 cans of tennis balls. There are 3 tennis balls in each can. 6 cans × 3 balls in each can = 18 balls.</p>')}`,
+ gen(L){const t=pick(L<=3?['tot','tot','each','groups']:L<=6?['tot','each','groups','dozen']:['tot','each','groups','dozen','tot']);
+  const g=R(2,L<=3?6:9),e=L<=3?R(2,9):L<=6?R(3,12):R(11,25),T=g*e;
+  const S={tot:[[`There were ${e} boys in each row. There were ${g} rows. How many boys were in all ${g} rows?`,'rows','boys in each row'],[`Each of the ${g} boats carried ${e} people. How many people were on the boats?`,'boats','people in each boat'],[`${KD().n} has ${g} bags. There are ${e} marbles in each bag. How many marbles are there in all?`,'bags','marbles in each bag']],
+   each:[[`There were ${T} birds in ${g} equal flocks. How many birds were in each flock?`,'flocks','birds in each flock'],[`${T} stickers are shared equally by ${g} friends. How many stickers does each friend get?`,'friends','stickers for each friend']],
+   groups:[[`${KD().n} bought ${T} eggs. There were ${e} eggs in each carton. How many cartons were there?`,'cartons','eggs in each carton'],[`${T} chairs are set up in rows of ${e}. How many rows are there?`,'rows','chairs in each row']]};
+  const ex1=HOW('Use the equal groups formula: Number of groups × Number in each group = Total. Find which number is missing. If the total is missing, multiply. If a group number is missing, divide the total by the number you know.');
+  if(t==='dozen'){const d=R(2,L<=6?5:9);return {ask:'Word problem',html:`A display case held ${W(d)} dozen muffins. How many muffins were in the case?`,wordy:true,ans:Q(d*12),skill:'Equal groups: total (dozens)',ex:ex1,ex2:`A dozen is 12. Formula: ${d} dozen × 12 in each dozen = n.`}}
+  const s=pick(S[t]);const f=t==='tot'?`${g} ${s[1]} × ${e} ${s[2]} = n`:t==='each'?`${g} ${s[1]} × n ${s[2]} = ${T}`:`n ${s[1]} × ${e} ${s[2]} = ${T}`;
+  return {ask:'Word problem',html:s[0],wordy:true,ans:Q(t==='tot'?T:t==='each'?e:g),skill:t==='tot'?'Equal groups: find the total':t==='each'?'Equal groups: find the number in each group':'Equal groups: find the number of groups',ex:ex1,ex2:`For this story: ${f}. ${t==='tot'?'Multiply to find n.':'Divide to find n.'}`};
+ }},
+'50':{name:'Adding and Subtracting Decimal Numbers, Part 2',book:'Lesson 50',
+ c:`<p>Line up the <b>decimal points</b>, not the last digits. If a number has an empty place, <b>treat the empty place as a zero</b>.</p>
+ ${EXB('Example',`<p>4.25 − 2.5: write 2.5 as 2.50, line up the points, then subtract. ${V('4.25','−','2.50')}</p>`)}
+ <p>The first place after the decimal point is tenths, the second is hundredths. To solve n + 1.5 = 4.75, subtract: 4.75 − 1.50.</p>`,
+ gen(L){const t=pick(L<=3?['ep','ep','place']:L<=6?['ep','place','eq','ep','between']:['ep','eq','three','whole','between','cmpT','place']);
+  const ex1=HOW('Line up the decimal points, not the last digits. If one number has an empty place, write a zero there. Then add or subtract, and bring the decimal point straight down.');
+  if(t==='ep'){const op=Math.random()<.5?'+':'-',w=L<=6?5:9;let a=R(101,w*100+99),b=R(11,w*10+9);
+    let A=a,B=b*10;if(op==='-'&&B>=A){A=B+R(5,300)}if(A%10===0)A+=R(1,9);
+    const sa=dstr(A,2),sb=dstr(b=B/10,1),swap=Math.random()<.5&&op==='+';const res=op==='+'?A+B:A-B;
+    const [x,y]=swap?[sb,sa]:[sa,sb];return {ask:op==='+'?'Add.':'Subtract.',html:`${x} ${op==='+'?'+':'−'} ${y}`,ans:Q(res,100),dec:true,show:dstr(res,2).replace(/0$/,''),skill:op==='+'?'Adding decimals with an empty place':'Subtracting decimals with an empty place',
+      ex:ex1,ex2:`Write ${sb} as ${sb}0. Now line it up:<br>${V(swap?sb+'0':sa,op==='+'?'+':'−',swap?sa:sb+'0')}<br>${colNotes(swap?B:A,swap?A:B,2,op,false)}`}}
+  if(t==='whole'){const w=R(2,20),A=R(101,999);return {ask:'Add.',html:`${w} + ${dstr(A,2)}`,ans:Q(w*100+A,100),dec:true,show:dstr(w*100+A,2),skill:'Adding a whole number and a decimal',ex:ex1,ex2:`A whole number has its decimal point at the end: ${w} = ${w}.00. Line up the decimal points and add.`}}
+  if(t==='place'){const v=R(1001,99999),s=dstr(v,2);if(Math.random()<.5){const pl=pick(['tenths','hundredths']);return {ask:`Which digit in ${s} is in the ${pl} place?`,html:'',ans:Q(+(pl==='tenths'?s[s.length-2]:s[s.length-1])),skill:'Decimal place value',
+      ex:HOW('Start at the decimal point. One place to the right is tenths. Two places to the right is hundredths.'),ex2:'Do not count from the left side of the number. Count from the decimal point.'}}
+    const u=R(11,99),su=dstr(u,1),which=pick([0,1]);const sv=dstr(R(101,999),2);const dig=which?su[su.length-1]:su[0];
+    return {ask:`Which digit in ${su} is in the same place as the ${which?sv[sv.length-2]:sv[0]} in ${sv}?`,html:'',ans:Q(+dig),skill:'Decimal place value',
+      ex:HOW('First name the place of the digit in the second number (ones, tenths, or hundredths). Then find the digit in that same place in the first number.'),ex2:'Use the decimal point as your guide: ones are just to the left of it, tenths are just to the right.'}}
+  if(t==='eq'){const kn=R(11,59),n=R(101,599),tot=n+kn*10;return {ask:'Find n.',html:`n + ${dstr(kn,1)} = ${dstr(tot,2)}`,ans:Q(n,100),dec:true,show:dstr(n,2),skill:'Missing addend with decimals',
+      ex:HOW('To find a missing addend, subtract the number you know from the total. Line up the decimal points and fill any empty place with a zero.'),ex2:`n = ${dstr(tot,2)} − ${dstr(kn,1)}0`}}
+  if(t==='three'){const xs=[R(11,99),R(11,99),R(11,99)];return {ask:'Add.',html:xs.map(x=>dstr(x,1)).join(' + '),ans:Q(xs[0]+xs[1]+xs[2],10),dec:true,show:dstr(xs[0]+xs[1]+xs[2],1),skill:'Adding decimals',
+      ex:ex1,ex2:'Write the three numbers in a column with the decimal points lined up. Add the tenths first and carry if they make 10 or more.'}}
+  if(t==='cmpT'){const s=R(551,659),A=600,B=s;if(B===600)return this.gen(L);return cmpQ('1 minute',`${dstr(B,1)} seconds`,A,B,{skill:'Comparing time in decimals',ex:HOW('Change the minute into seconds first: 1 minute = 60 seconds. Then compare the two numbers of seconds.'),ex2:'Compare the whole seconds first (the digits before the decimal point).'})}
+  const lo=R(1,8),good=dstr(lo*10+R(1,9),1),bad=[dstr(R(1,9)*10+R(1,9),2),dstr((lo+1)*10+R(1,9),1),dstr((lo+1)*100+R(10,99),2)];
+  return choiceQ([good,...bad].map(x=>x+' sec'),0,{ask:`Which time is more than ${W(lo)} second${lo>1?'s':''} but less than ${W(lo+1)} seconds?`,html:'',show:good+' sec',skill:'Comparing decimals',
+    ex:HOW(`Look at the whole number part of each time (the digit before the decimal point) and compare each time with ${lo} and with ${lo+1}.`),ex2:'A time like 0.75 is less than one second. Line up the decimal points if it helps.'});
+ }}
+};
+function mfQ(L){const f=R(2,L<=4?9:12),g=R(2,L<=4?9:12),p=f*g,v=pick(['n','w','m']),form=R(0,2);
+  const html=form===0?`${f}${v} = ${p}`:form===1?`${v} × ${f} = ${p}`:`${f} × ${v} = ${p}`;
+  return {ask:'Find the missing factor.',html,ans:Q(g),skill:'Missing factors',
+    ex:HOW(`Factor × Factor = Product. You know one factor (${f}) and the product (${p}). Ask: "${f} times what number equals ${p}?"${form===0?` (${f}${v} means ${f} × ${v}.)`:''} On the multiplication table, find the ${f} row, go across to ${p}, then look up.`),
+    ex2:`Count by ${f}s until you reach ${p}. The number of ${f}s you counted is the missing factor.`}}
+const UNIT_IDS=['M2','D1','I4','41','42','43','44','45','46','47','48','49','50'];
+const ulabel=u=>u==='CH'?'Challenge quiz':u==='I4'?'Investigation 4':'Lesson '+u;
+// seeded bank of 100 questions: easy → hard (level 1 + i/10)
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function seeded(seed,fn){const o=Math.random;Math.random=mulberry(seed);try{return fn()}finally{Math.random=o}}
+const BANKS={};
+function bank(u){if(BANKS[u])return BANKS[u];const seen=new Set(),out=[],h=[...u].reduce((s,c)=>s*31+c.charCodeAt(0),7);
+  for(let i=0;i<100;i++){const L=1+Math.floor(i/10);let q,k=0;
+    do{q=seeded(h*7919+i*104729+k*13,()=>UG[u].gen(L));q.kind=q.kind||'num';q.text=plainQ(q);k++}while(seen.has(q.text)&&k<12);
+    seen.add(q.text);q.topic='U'+u;q.lv=L;q.ui=i;out.push(q)}
+  return BANKS[u]=out}
+const qShow=q=>q.show||(q.kind==='blanks'?q.ans.map(a=>N(a.n/a.d)).join(', '):q.fr?showFrac(q.ans):q.money?$c(Math.round(q.ans.n/q.ans.d*100)):q.dec?showDec(q.ans):N(q.ans.n/q.ans.d));
+// ---------- challenge level: harder problems when she is fast and correct (levels 11–14) ----------
+const CH={
+ M2(L){return CH.m2(L)}, D1(L){return CH.ld(L)},
+ I4(L){const t=pick(L<=12?['th','cmp3','fd','df']:['fd','df','pct','cmp3','th']);
+  if(t==='th'){const w=R(0,20),n=R(1,999);return {ask:'Use digits to write this decimal number.',html:(w?W(w)+' and ':'')+W(n)+' thousandth'+(n>1?'s':''),wordy:true,ans:Q(w*1000+n,1000),dec:true,show:(w+n/1000).toFixed(3),skill:'Thousandths (challenge)',
+    ex:HOW('"And" is the decimal point. Thousandths need three digits after the decimal point: tenths, hundredths, thousandths.'),ex2:'If the number of thousandths has fewer than three digits, fill the empty places right after the decimal point with zeros.'}}
+  if(t==='cmp3'){const A=R(101,999),B=pick([Math.round(A/10),Math.round(A/100)*10+R(0,9),A+R(1,9)]);const fa=dstr(A,3),fb=String(B).length<=2?dstr(B,2):dstr(B,3);const Bv=String(B).length<=2?B*10:B;if(A===Bv)return CH.I4(L);
+    return cmpQ(fa,fb,A,Bv,{skill:'Comparing decimals (challenge)',ex:HOW('Line up the decimal points and write zeros in empty places so both numbers have three digits after the point. Then compare from left to right.'),ex2:`Write ${fb} with three decimal places, then compare digit by digit.`})}
+  if(t==='fd'){const o=pick([[1,5],[2,5],[3,5],[4,5],[1,4],[3,4],[1,20],[7,20],[9,20],[3,25],[1,8],[3,8],[1,2]]);return {ask:'Write this fraction as a decimal number.',html:F(o[0],o[1]),txt:`${o[0]}/${o[1]} as a decimal`,ans:Q(o[0],o[1]),dec:true,show:showDec(Q(o[0],o[1])),skill:'Fractions to decimals (challenge)',
+    ex:HOW('Make an equal fraction with 10, 100, or 1000 on the bottom. Multiply the top and bottom by the same number. Then write it as a decimal.'),ex2:`What number times ${o[1]} makes 10, 100, or 1000? Multiply the top by that same number.`}}
+  if(t==='df'){const o=pick([[35,100],[15,100],[45,100],[6,10],[8,10],[24,100],[65,100],[125,1000],[2,10]]),p=String(o[1]).length-1,r=Q(o[0],o[1]);return {ask:`Write ${dstr(o[0],p)} as a fraction in simplest form.`,html:'',ans:r,fr:true,show:`${r.n}/${r.d}`,simplest:true,skill:'Decimals to fractions in simplest form (challenge)',
+    ex:HOW('Write the decimal as tenths, hundredths, or thousandths. Then reduce: divide the top and bottom by the same number until you cannot anymore.'),ex2:'Try dividing the top and bottom by 5, or by 2, and check if you can reduce again.'}}
+  const v=R(1,99);return {ask:`Write ${dstr(v,2)} as a percent. (Type just the number.)`,html:'',ans:Q(v),show:v+'%',skill:'Decimals to percents (challenge)',ex:HOW('Percent means "out of 100." Write the decimal as hundredths. The number of hundredths is the percent.'),ex2:'Move the decimal point two places to the right.'};
+ },
+ '41'(L){const t=pick(['mf','div','two']);
+  if(t==='mf'){const f=R(11,15),g=R(3,12);return {ask:'Find the missing factor.',html:`${f}n = ${f*g}`,ans:Q(g),skill:'Missing factors (challenge)',ex:HOW(`Factor × Factor = Product. Ask: "${f} times what number equals ${f*g}?" Divide the product by the factor you know.`),ex2:`Count by ${f}s, or divide ${f*g} by ${f}.`}}
+  if(t==='div'){const d=R(3,9),q=R(6,15);return {ask:'Find n.',html:`n ÷ ${d} = ${q}`,ans:Q(d*q),skill:'Missing dividend (challenge)',ex:HOW('Multiplication undoes division. The missing number is the one being divided, so multiply the other two numbers.'),ex2:`n = ${q} × ${d}`}}
+  const a=R(2,9),x=R(2,12),b=R(1,20);return {ask:'Find n.',html:`${a}n + ${b} = ${a*x+b}`,ans:Q(x),skill:'Two-step equations (challenge)',ex:HOW(`Undo the steps in reverse order. First undo "+ ${b}" by subtracting ${b} from both sides. Then undo "× ${a}" by dividing.`),ex2:`${a}n = ${a*x+b} − ${b}. Then divide by ${a}.`};
+ },
+ '42'(L){const t=pick(['th','dec','est2','dec2']);
+  if(t==='th'){const n=R(1001,99999);if(n%1000===500)return CH['42'](L);return {ask:`Round ${N(n)} to the nearest thousand.`,html:'',ans:Q(Math.round(n/1000)*1000),skill:'Rounding to the nearest thousand (challenge)',ex:HOW('Look at the hundreds digit. 5 or more: round up. Less than 5: round down. Every digit after the thousands place becomes 0.'),ex2:`Which two thousands is ${N(n)} between?`}}
+  if(t==='dec'||t==='dec2'){const p=t==='dec2'&&L>=13?2:1,v=R(100,9999);if(v%10===5)return CH['42'](L);const r=Math.round(v/10)/10**(p===1?1:0);
+    if(p===1)return {ask:`Round ${dstr(v,2)} to the nearest tenth.`,html:'',ans:Q(Math.round(v/10),10),dec:true,show:dstr(Math.round(v/10),1),skill:'Rounding decimals (challenge)',ex:HOW('Look at the digit to the right of the tenths place (the hundredths digit). 5 or more: round the tenths up. Less than 5: keep the tenths digit.'),ex2:'Your answer has only one digit after the decimal point.'};
+    return {ask:`Round ${dstr(v,2)} to the nearest whole number.`,html:'',ans:Q(Math.round(v/100)),skill:'Rounding decimals (challenge)',ex:HOW('Look at the tenths digit. 5 or more: round up to the next whole number. Less than 5: round down.'),ex2:'The answer has no decimal part.'}}
+  let a=R(12,98),b=R(12,98);if(a%10===5||b%10===5)return CH['42'](L);return {ask:'Estimate the product. Round each number to the nearest ten, then multiply.',html:`${a} × ${b}`,ans:Q(r10(a)*r10(b)),skill:'Estimating products (challenge)',
+    ex:HOW('Round both numbers to the nearest ten. Multiply the first digits, then attach both zeros.'),ex2:`Round ${a} and ${b}. Then multiply the rounded numbers.`};
+ },
+ '43'(L){const t=pick(['dw','price','dw']);
+  if(t==='dw'){const v=R(11,L>=13?999:99),p=v>99?2:1,m=R(2,9);if(v%10===0)return CH['43'](L);return {ask:'Multiply.',html:`${dstr(v,p)} × ${m}`,ans:Q(v*m,10**p),dec:true,show:dstr(v*m,p),skill:'Multiplying a decimal by a whole number (challenge)',
+    ex:HOW(`Multiply as if there were no decimal point. Then count the digits after the decimal point in ${dstr(v,p)} and put the same number of digits after the point in your answer.`),ex2:`First find ${v} × ${m}. Then place the decimal point ${p===1?'one place':'two places'} from the right.`}}
+  const k=KD(),c=R(105,495),n=R(3,6);return {ask:'Word problem',html:`${k.n} bought ${n} notebooks. Each notebook cost ${$c(c)}. How much did ${k.p} spend?`,wordy:true,ans:Q(c*n,100),dec:true,money:true,show:$c(c*n),skill:'Money times a whole number (challenge)',
+    ex:HOW('Equal groups: price of one × number bought = total. Multiply the cents as a whole number, then put the decimal point two places from the right.'),ex2:`Multiply ${c} × ${n}, then write it as dollars and cents.`};
+ },
+ '44'(L){return CH.m2(L)}, '48'(L){return CH.m2(L)},
+ m2(L){const a=L<=12?R(12,49):L===13?R(21,99):R(101,499),b=L<=12?R(11,19):R(12,49);if(b%10===0)return CH.m2(L);const o=b%10,t=b-o;
+  return {ask:'Multiply.',html:V(a,'×',b),txt:`${a} × ${b}`,ans:Q(a*b),skill:'Multiplying by a two-digit number (challenge)',
+   ex:HOW(`Multiply in two rows. First row: ${a} × ${o}. Second row: ${a} × ${t} (write a 0 in the ones place first, then multiply by ${t/10}). Then add the two rows.`),ex2:'Carry carefully in each row. Line up the rows by place value before you add.'}},
+ '45'(L){const t=pick(L>=13?['ops','exp','dist','ops']:['ops','dist','ops']);
+  if(t==='ops'){const a=R(2,20),b=R(2,9),c=R(2,9),d=R(1,a+b*c-1);return {ask:'Simplify. Use the order of operations.',html:`${a} + ${b} × ${c} − ${d}`,ans:Q(a+b*c-d),skill:'Order of operations (challenge)',ex:HOW('Multiply and divide first, from left to right. Then add and subtract from left to right.'),ex2:`First find ${b} × ${c}. Then add ${a}, then subtract ${d}.`}}
+  if(t==='dist'){const a=R(3,9),b=pick([10,20,30]),c=R(1,9);return {ask:'Find the value. You can split it into two easy multiplications.',html:`${a} × (${b} + ${c})`,ans:Q(a*(b+c)),skill:'Distributive property (challenge)',ex:HOW(`Multiply ${a} by each number in the parentheses, then add the two products. Or add inside the parentheses first.`),ex2:`${a} × ${b} plus ${a} × ${c}.`}}
+  const b=R(2,5),e=b<=3?R(2,4):2,c=R(2,9);return {ask:'Simplify.',html:`${b}<sup>${e}</sup> + ${c} × 3`,txt:`${b}^${e} + ${c} × 3`,ans:Q(b**e+c*3),skill:'Exponents and order of operations (challenge)',ex:HOW(`The small raised number is an exponent: multiply ${b} by itself that many times. Do exponents first, then multiply, then add.`),ex2:`${b}<sup>${e}</sup> means ${Array(e).fill(b).join(' × ')}.`};
+ },
+ '46'(L){return CH.ld(L)}, '47'(L){return CH.ld(L)},
+ ld(L){let d,q,r;if(L<=12){d=R(3,9);q=R(21,99);r=R(0,d-1)}else if(L===13){d=R(4,9);q=R(101,299);r=R(0,d-1)}else{d=R(11,19);q=R(12,40);r=R(0,d-1)}const n=d*q+r;
+  return {kind:'rem',ask:'Use long division. If there is a remainder, type it like 23 R 4.',html:LD(n,d),txt:`${n} ÷ ${d}`,qt:q,r,show:r?`${q} R ${r}`:String(q),skill:'Long division (challenge)',
+   ex:HOW('Repeat four steps from left to right: Divide, Multiply, Subtract, Bring down. Whatever is left at the end is the remainder, and it must be less than the number you divide by.'),
+   ex2:`Check your answer: quotient × ${d} + remainder should equal ${n}, and the remainder must be less than ${d}.`}},
+ '49'(L){const t=pick(['two','unit','two']);
+  if(t==='unit'){const n=R(3,6),p=R(105,450),tot=n*p;return {ask:'Word problem',html:`${n} bottles of juice cost ${$c(tot)} in all. Each bottle costs the same. How much does one bottle cost?`,wordy:true,ans:Q(p,100),dec:true,money:true,show:$c(p),skill:'Unit price (challenge)',ex:HOW('Total ÷ number of items = price of one. Divide the cents like a whole number, then write the answer as dollars and cents.'),ex2:`Divide ${tot} cents by ${n}.`}}
+  const p=R(3,8),e=pick([6,8,10,12]),c=R(2,6);let tot=p*e;if(tot%c||c===p)return CH['49'](L);return {ask:'Two-step word problem',html:`A teacher has ${p} packs of pencils with ${e} pencils in each pack. She shares all the pencils equally among ${c} tables. How many pencils does each table get?`,wordy:true,ans:Q(tot/c),skill:'Two-step equal groups (challenge)',
+   ex:HOW('Do it in two steps. Step 1: find the total with the equal groups formula (packs × pencils in each pack). Step 2: share the total equally (divide).'),ex2:`Step 1: ${p} × ${e}. Step 2: divide that total by ${c}.`};
+ },
+ '50'(L){const t=pick(['x10','dw','eqm','div']);
+  if(t==='x10'){const v=R(11,999),p=v>99?2:1,m=pick([10,100]);return {ask:'Multiply.',html:`${dstr(v,p)} × ${m}`,ans:Q(v*m,10**p),dec:true,show:showDec(Q(v*m,10**p)),skill:'Multiplying decimals by 10 and 100 (challenge)',ex:HOW(`Multiplying by ${m} moves every digit ${m===10?'one place':'two places'} to the left, so the decimal point moves ${m===10?'one place':'two places'} to the right. Fill empty places with zeros.`),ex2:`Move the decimal point in ${dstr(v,p)} to the right.`}}
+  if(t==='dw'){const v=R(11,99),m=R(3,9);if(v%10===0)return CH['50'](L);return {ask:'Multiply.',html:`${dstr(v,1)} × ${m}`,ans:Q(v*m,10),dec:true,show:dstr(v*m,1),skill:'Multiplying a decimal by a whole number (challenge)',ex:HOW('Multiply as whole numbers, then put one digit after the decimal point because the decimal has one digit after its point.'),ex2:`First find ${v} × ${m}.`}}
+  if(t==='eqm'){const m=R(2,9),x=R(11,99);if((m*x)%10===0)return CH['50'](L);return {ask:'Find n.',html:`${m} × n = ${dstr(m*x,1)}`,ans:Q(x,10),dec:true,show:dstr(x,1),skill:'Decimal equations (challenge)',ex:HOW('To find a missing factor, divide the product by the factor you know. Keep the decimal point in the same place, straight up above the division box.'),ex2:`n = ${dstr(m*x,1)} ÷ ${m}`}}
+  const d=R(2,9),x=R(11,99);return {ask:'Divide.',html:LD(dstr(d*x,1),d),txt:`${dstr(d*x,1)} ÷ ${d}`,ans:Q(x,10),dec:true,show:dstr(x,1),skill:'Dividing a decimal by a whole number (challenge)',ex:HOW('Put the decimal point in the answer straight above the decimal point inside the box. Then divide like whole numbers.'),ex2:'Divide, multiply, subtract, bring down, and remember the decimal point.'};
+ }
+};
+const UNIT_N=20;
+const UN={
+  on:false,
+  st(u){DB.units=DB.units||{};return DB.units[u]=DB.units[u]||{m:[],miss:[],runs:0,boost:0}},
+  u(){if(!UG[DB.unitU])DB.unitU=UNIT_IDS[0];return DB.unitU},
+  run(){return DB.unitRun||null},
+  // the app picks the next unit by itself: move on after a strong quiz, otherwise repeat; she never chooses
+  startChallenge(){const items=[];for(let k=0;k<UNIT_N;k++){const u=pick(UNIT_IDS),L=11+Math.floor(k/5),cq=CH[u](L);cq.kind=cq.kind||'num';cq.text=plainQ(cq);cq.topic='U'+u;cq.lv=L;items.push({i:-1,cq,a:[],dt:0,res:null})}
+    DB.unitRun={u:'CH',items,i:0,acc:0,since:Date.now(),t:Date.now(),retry:[],phase:'main',boost:0,fast:0,slow:0};save();this.show()},
+  nextUnit(rec){if(rec.u==='CH')return;const k=UNIT_IDS.indexOf(rec.u);if(rec.score>=16)DB.unitU=UNIT_IDS[(k+1)%UNIT_IDS.length];else DB.unitU=rec.u},
+  elapsed(r){return (r.acc||0)+(r.since?Date.now()-r.since:0)},
+  pause(){const r=DB.unitRun;if(r&&r.since){r.acc=this.elapsed(r);r.since=0;save()}},
+  resume(){const r=DB.unitRun;if(this.on&&r&&!r.since&&!r.over){r.since=Date.now()}},
+  tick(){const r=this.run();const el=$('uTimer');if(!el)return;el.textContent=r?fmtS(Math.floor(this.elapsed(r)/1000)):'0:00'},
+  bar(){const r=this.run(),live=r&&!r.over;$('uProg').innerHTML=live?r.items.map((it,k)=>`<span class="${it.res==='first'?'ok':it.res?'no':k===r.i?'cur':''}">${k+1}</span>`).join(''):'';
+    $('uRun').hidden=!live;$('uBoost').innerHTML=live&&r.boost?`<span class="boost">${'★'.repeat(r.boost)} Challenge</span>`:'';this.tick()},
+  pickSet(u){const s=this.st(u),B=bank(u),mastered=new Set(s.m);
+    const again=[...new Set(s.miss)].filter(i=>!mastered.has(i)).slice(0,6);
+    const open=B.map((q,i)=>i).filter(i=>!mastered.has(i)&&!again.includes(i));
+    let set=[...again,...shuffle(open.slice(0,40)).slice(0,UNIT_N-again.length)];
+    if(set.length<UNIT_N)set=set.concat(shuffle(B.map((q,i)=>i).filter(i=>!set.includes(i))).slice(0,UNIT_N-set.length));
+    return set.sort((a,b)=>a-b)},
+  extra(id){const lv=Math.min(10,1+Math.floor(this.st(id).m.length/10)+Math.floor((this.st(this.u()).runs||0)/2)),q=UG[id].gen(lv);q.kind=q.kind||'num';q.text=plainQ(q);q.topic='U'+id;q.lv=lv;return q},
+  start(){const u=this.u(),s=this.st(u);let items=this.pickSet(u).map(i=>({i,a:[],dt:0,res:null}));
+    if(u!=='M2'&&u!=='D1'){const slots=shuffle(items.map((x,k)=>k)).slice(0,4).sort((a,b)=>a-b);slots.forEach((k,j)=>{items[k]={i:-1,cq:this.extra(j%2?'D1':'M2'),a:[],dt:0,res:null}})}
+    DB.unitRun={u,items,i:0,acc:0,since:Date.now(),t:Date.now(),retry:[],phase:'main',boost:Math.max(0,(s.boost||0)-1),fast:0,slow:0};save();this.show()},
+  q(){const r=this.run(),it=r.items[r.i];
+    if(!it.cq&&r.phase==='main'&&r.boost>0){const cq=CH[r.u](10+r.boost);cq.kind=cq.kind||'num';cq.text=plainQ(cq);cq.topic='U'+r.u;cq.lv=10+r.boost;it.cq=cq;it.i=-1;save()}
+    const q=Object.assign({},it.cq||bank(r.u)[it.i]);q.answers=[];return q},
+  show(){
+    if(!this.on)return;const r=this.run();
+    $('hello').textContent=DB.name?`Hi ${DB.name}! Quiz time.`:'Quiz time!';$('statusSec').hidden=true;
+    if(!r||r.over)return this.intro(r&&r.over?r:null);
+    this.resume();
+    if(r.i>=r.items.length){
+      if(r.phase==='main'&&r.retry.length){r.phase='retry';r.items=r.items.concat(r.retry.map(k=>({i:r.items[k].i,cq:r.items[k].cq,a:[],dt:0,res:null,again:k})));r.retry=[];save();return this.show()}
+      return this.finishRun()}
+    const it=r.items[r.i],q=this.q();
+    renderQ(q,r.u==='CH'?'Challenge quiz':r.boost&&it.cq?'Quiz · Challenge':'Quiz',it.again!=null?`Try again · problem ${it.again+1}`:`Problem ${r.i+1} of ${UNIT_N}`);
+    if(it.again!=null)$('tip').textContent='You can do this one now. '+tipFor(q);
+    this.qt0=Date.now();this.bar();
+  },
+  maxTries(q){return q.kind==='choice'?Math.min(3,q.choices.length-1):3},
+  fastLimit(q){return (q.wordy?45:q.kind==='blanks'?60:q.kind==='choice'?20:25)*1000*(q.lv>10?1.5:1)},
+  check(ok,btn){
+    const r=this.run(),it=r.items[r.i],q=cur;it.dt+=Date.now()-(this.qt0||Date.now());this.qt0=Date.now();
+    if(ok){if(btn)btn.classList.add('right');
+      it.res=tries===0?'first':'second';
+      let msg=tries===0?pick(['Correct!','Nice work!','Exactly right!','You got it!']):'Yes! You fixed it. Great thinking.';
+      if(r.phase==='main'){
+        if(tries===0&&it.dt<=this.fastLimit(q)){r.fast++;r.slow=0;if(r.fast>=3&&r.boost<4){r.boost++;r.fast=0;msg+=' Fast and correct! Harder problems are coming. ★'}}
+        else if(tries>0){r.fast=0}}
+      feedback('good',msg);return this.done(q,it)}
+    tries++;it.a.push(q.answers[q.answers.length-1]);
+    if(btn){btn.classList.add('wrong');btn.disabled=true}
+    this.logMiss(q,it,tries);
+    if(tries===1&&r.phase==='main'){r.fast=0;r.slow++;if(r.slow>=2&&r.boost>0){r.boost--;r.slow=0}}
+    if(tries<this.maxTries(q)){
+      if(tries===1)feedback('bad','Not quite. Let\'s use the method from your book:',q.ex);
+      else feedback('bad','Still not quite. Follow these steps carefully:',`${q.ex}<br><br><b>Step by step:</b> ${q.ex2||''}`);
+      if(!btn&&!$('ans').hidden)$('ans').select();return}
+    it.res='missed';
+    feedback('bad','Let\'s leave this one for now.',(r.phase==='main'?'It will come back at the end of this quiz so you can try again. ':'')+`Remember: ${q.ex2||q.ex}`);
+    if(r.phase==='main')r.retry.push(r.i);
+    this.done(q,it)},
+  logMiss(q,it,n){const r=this.run();r.wrong=r.wrong||[];r.wrong.push({i:it.i,q:q.text,a:q.answers[q.answers.length-1],c:strip(qShow(q)),sk:q.skill,n,lv:q.lv,ph:r.phase})},
+  done(q,it){
+    const r=this.run(),s=this.st(r.u);done=true;$('ans').disabled=true;$('go').hidden=true;
+    $('q').querySelectorAll('.blank').forEach(b=>b.disabled=true);$('choices').querySelectorAll('.choice').forEach(b=>b.disabled=true);
+    if(!it.cq){if(it.res==='first'&&r.phase==='main'){if(!s.m.includes(it.i))s.m.push(it.i);s.miss=s.miss.filter(x=>x!==it.i)}
+      else if(it.res!=='first'){if(!s.miss.includes(it.i))s.miss.push(it.i);if(s.miss.length>30)s.miss=s.miss.slice(-30)}}
+    DB.log=DB.log||[];DB.log.push({t:Date.now(),s:DB.grade,p:q.topic||'U'+r.u,l:q.lv,r:it.res,q:q.text,a:it.a.slice(0,3),c:strip(qShow(q)),k:q.skill,dt:Math.min(it.dt,600000),x:r.u==='CH'?'Challenge quiz':ulabel(r.u)+' quiz'+(it.cq?' (challenge)':'')});
+    if(DB.log.length>2000)DB.log=DB.log.slice(-2000);
+    r.i++;save();this.bar();
+    const last=r.i>=r.items.length&&!(r.phase==='main'&&r.retry.length);
+    $('next').textContent=last?'See my score':r.phase==='main'&&r.i>=r.items.length?'Try the skipped problems':'Next problem';
+    $('next').hidden=false;$('next').focus({preventScroll:true});renderTable()},
+  next(){this.show()},
+  finishRun(){
+    const r=this.run(),s=this.st(r.u);this.pause();r.over=true;s.runs++;s.boost=r.boost;
+    const main=r.items.slice(0,UNIT_N),score=main.filter(x=>x.res==='first').length,secs=Math.round(r.acc/1000);
+    const skills={};(r.wrong||[]).forEach(w=>{skills[w.sk]=(skills[w.sk]||0)+1});
+    const rec={t:Date.now(),s:DB.grade,u:r.u,score,n:UNIT_N,secs,boost:r.boost,ch:main.filter(x=>x.cq).length,fixed:r.items.filter(x=>x.res==='second').length,
+      skills,wrong:(r.wrong||[]).slice(0,80),times:main.map(x=>Math.round(x.dt/1000))};
+    DB.unitLog=DB.unitLog||[];DB.unitLog.push(rec);if(DB.unitLog.length>120)DB.unitLog=DB.unitLog.slice(-120);
+    if(!s.best||score>s.best.score||(score===s.best.score&&secs<s.best.secs))s.best={score,secs};
+    r.rec=rec;this.nextUnit(rec);save();this.intro(r)},
+  intro(r){
+    this.bar();
+    if(r&&r.rec){const x=r.rec;
+      LS.pane('Quiz','Finished',`<p class="ask">${DB.name?DB.name+', your':'Your'} score</p><div class="score">${x.score} / ${x.n}</div>
+       <p>Time: <b>${fmtS(x.secs)}</b> (about ${Math.round(x.secs/x.n)} seconds a problem). ${x.score>=18?'Excellent work!':x.score>=14?'Good job! A little more practice and you will have it.':'Good effort. Every mistake you fix makes you stronger.'}${x.ch?` You reached ${x.ch} challenge problem${x.ch>1?'s':''}! ★`:''}</p>
+       <div class="hwres">${r.items.slice(0,x.n).map((it,k)=>`<span class="${it.res==='first'?'ok':'no'}">${k+1} ${it.res==='first'?'✓':it.res==='second'?'↺':'✗'}</span>`).join('')}</div>
+       <p class="how" style="margin:0">✓ right the first time · ↺ fixed after an explanation · ✗ still needs practice</p>
+       <div class="prow"><button class="btn" id="uStart" type="button">Start the next quiz</button><button class="btn ghost" id="uChal" type="button">★ Challenge quiz</button></div>`);
+      $('uStart').onclick=()=>this.start();$('uChal').onclick=()=>this.startChallenge();return}
+    const b=this.st(this.u()).best;
+    LS.pane('Quiz','20 problems',`<h2>Quiz</h2><p>20 problems. The clock runs while you work, so work carefully and steadily.</p>
+      <p>If an answer is not right, you will see how to solve it the way your book does, and you can try again. Answer fast and correctly, and the problems get more challenging. ★</p>
+      <div class="prow"><button class="btn" id="uStart" type="button">Start the quiz</button><button class="btn ghost" id="uChal" type="button">★ Challenge quiz</button></div>
+      <p class="how" style="margin:0">The Challenge quiz has 20 harder problems that get tougher every 5 problems.</p>`);
+    $('uStart').onclick=()=>this.start();$('uChal').onclick=()=>this.startChallenge();
+  }
+};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)UN.pause();else if(UN.on&&DB.unitRun&&!DB.unitRun.over&&!$('qbox').hidden)UN.resume()});
+setInterval(()=>{if(UN.on)UN.tick()},1000);
+
+UNIT_IDS.forEach(u=>TOPICS.push({id:'U'+u,name:`${ulabel(u)}: ${UG[u].name}`,hidden:true}));
+function setMode(m){if(UN.on&&m!=='units')UN.pause();DB.mode=m;save();LS.on=m==='lesson';UN.on=m==='units';LS.hw=false;
+  $('mLesson').setAttribute('aria-pressed',LS.on);$('mUnits').setAttribute('aria-pressed',UN.on);$('mFree').setAttribute('aria-pressed',m==='free');
+  $('lessonBar').hidden=!LS.on;$('unitBar').hidden=!UN.on;$('chips').hidden=m!=='free';$('statusSec').hidden=false;
+  if(LS.on)LS.show();else if(UN.on)UN.show();else{hello();renderChips();newQ()}}
+$('mLesson').onclick=()=>setMode('lesson');$('mFree').onclick=()=>setMode('free');$('mUnits').onclick=()=>setMode('units');
 $('lessonSel').onchange=e=>LS.setLesson(+e.target.value);
 
-$('form').addEventListener('submit',e=>{e.preventDefault();if(LS.hw){LS.hwSubmit();return}if(done||cur.kind==='choice')return;const res=readAnswer();if(!res.err)cur.answers.push(inputText());grade(res)});
+$('form').addEventListener('submit',e=>{e.preventDefault();if(LS.hw){LS.hwSubmit();return}if(done||cur.kind==='choice')return;const res=readAnswer();if(UN.on){if(res.err){feedback('bad',res.err);return}cur.answers.push(inputText());UN.check(res.ok,null);return}if(!res.err)cur.answers.push(inputText());grade(res)});
 $('parent').addEventListener('toggle',renderTable);
-$('next').onclick=()=>LS.on?LS.next():newQ();
+$('next').onclick=()=>LS.on?LS.next():UN.on?UN.next():newQ();
 
 function setGrade(n){DB.grade=n;save();$('g4').setAttribute('aria-pressed',n===4);$('g5').setAttribute('aria-pressed',n===5);
   if(!topicsFor().some(t=>t.id===G().topic))G().topic='mix';renderChips();newQ()}
@@ -1205,7 +1718,8 @@ $('cancel').onclick=()=>{$('confirmWrap').hidden=true};
 $('confirm').onclick=()=>{DB['g'+DB.grade]={};DB.log=(DB.log||[]).filter(e=>e.s!==DB.grade);DB.tests=(DB.tests||[]).filter(e=>e.s!==DB.grade);save();$('confirmWrap').hidden=true;renderChips();newQ()};
 
 setGrade(DB.grade===5?5:4);
-setMode(DB.mode||'lesson');
+if(!DB.quizFirst){DB.quizFirst=1;DB.mode='units';save()}
+setMode(DB.mode||'units');
 </script>
 </body>
 </html>

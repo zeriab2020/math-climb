@@ -96,6 +96,14 @@ form.ans input:focus{outline:none;border-color:var(--accent)}
 .tbody{display:grid;gap:2px;flex:1;min-width:0}
 .ttl{font:800 1.15rem/1.2 var(--display)}
 .tex{font:500 .95rem var(--mono);color:var(--muted)}
+.tlast{font:700 .82rem var(--body);color:var(--muted)}
+.tlast b{color:var(--accent)}
+.clock{font-variant-numeric:tabular-nums}
+.grade{display:flex;align-items:center;gap:14px;text-align:left;background:var(--bg);border-radius:18px;padding:12px 16px}
+.grade .gl{font:800 2.6rem/1 var(--display);color:var(--accent);min-width:1.4em;text-align:center}
+.sw{display:grid;gap:8px}
+.sw .pill{display:inline-block;border-radius:999px;padding:3px 10px;font-weight:800;font-size:.85rem}
+.pill.s{background:var(--good-bg);color:var(--good)}.pill.w{background:var(--bad-bg);color:var(--bad)}
 .pips{display:flex;gap:4px;margin-top:4px}
 .pips i{width:22px;height:7px;border-radius:999px;background:var(--track)}
 .pips i.on{background:var(--accent)}
@@ -302,18 +310,24 @@ function probHTML(o,qdigits){
 const CLIMBER='<svg class="climber" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="var(--paper)" stroke="var(--accent)" stroke-width="3"/><path d="M20 29s-9-5.6-9-11.4A4.8 4.8 0 0 1 20 15a4.8 4.8 0 0 1 9 2.6C29 23.4 20 29 20 29z" fill="var(--accent)"/></svg>';
 const FLAG='<svg class="flag" viewBox="0 0 22 26" aria-hidden="true"><path d="M3 2v24" stroke="var(--ink)" stroke-width="2.5"/><path d="M4 3h15l-4 5 4 5H4z" fill="var(--sun)"/></svg>';
 const round=()=>DB.round;
+const GR=p=>p>=90?'A':p>=80?'B':p>=70?'C':p>=60?'D':'Keep practicing';
+const roundSecs=()=>{const r=round();if(!r)return 0;return (r.secs||0)+(DB.cur&&DB.cur.t0?Math.min(Math.round((Date.now()-DB.cur.t0)/1000),900):0)};
+setInterval(()=>{const el=$('timer');if(el&&round()&&round().items.length<ROUND)el.textContent=fmtS(roundSecs())},1000);
+const MISTAKE=[[/row 2 is missing its 0/,'Forgets the 0 in row 2'],[/added/,'Adds instead of multiplying'],[/decimal point/,'Puts the decimal point in the wrong place'],[/remainder must be less/,'Remainder bigger than the divisor'],[/digit above every digit/,'Skips a 0 in the answer (division)'],[/last subtraction/,'Subtraction slip at the end (division)']];
+const mistakeTag=m=>{const f=MISTAKE.find(x=>x[0].test(m));return f?f[1]:''};
 function renderTrail(){const r=round(),el=$('today');$('starN').textContent=DB.stars||0;if(!r){el.hidden=true;return}el.hidden=false;
   const done=r.items.length,pct=Math.min(100,done/ROUND*100),left=Math.max(0,ROUND-done);
-  el.innerHTML=`<div class="lbl"><span>${esc(TP(r.tid).title)}</span><span>${left?`${left} more to the top`:'You reached the top!'}</span></div>
+  el.innerHTML=`<div class="lbl"><span>${esc(TP(r.tid).title)}</span><span><span class="clock" aria-label="Time">⏱ <b id="timer">${fmtS(roundSecs())}</b></span> · ${left?`${left} to go`:'Done!'}</span></div>
    <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="${ROUND}" aria-valuenow="${Math.min(done,ROUND)}"><div class="fill" style="width:${pct}%"></div><span style="position:absolute;left:${Math.max(3,Math.min(97,pct))}%;top:50%">${CLIMBER}</span>${FLAG}</div>`}
 function home(){DB.round=null;DB.cur=null;save();render();window.scrollTo(0,0)}
-function startTopic(tid){DB.round={tid,items:[]};DB.cur=null;save();render();window.scrollTo(0,0)}
+function startTopic(tid){DB.round={tid,items:[],secs:0,t:Date.now()};DB.cur=null;save();render();window.scrollTo(0,0)}
 function renderHome(){$('hello').textContent='Pick a lesson to practice';$('card').hidden=true;$('topics').hidden=false;renderTrail();
   let next=TOPICS.find(t=>!tst(t.id).done);
   $('topics').innerHTML=TOPICS.map((t,k)=>{const st=tst(t.id),n=t.steps.length,got=st.done?n:Math.min(st.i,n);
     const pips=Array.from({length:n},(_,i)=>`<i class="${i<got?'on':''}"></i>`).join('');
     const tag=st.done?'<span class="tag done">★ Done</span>':t===next?'<span class="tag next">Start here</span>':st.n?'<span class="tag">Keep going</span>':'';
-    return `<button class="topic${t===next?' is-next':''}${st.done?' is-done':''}" type="button" data-t="${t.id}"><span class="tnum">${k+1}</span><span class="tbody"><span class="ttl">${esc(t.title)}</span><span class="tex">${esc(t.ex)}</span><span class="pips" aria-label="${got} of ${n} steps">${pips}</span></span>${tag}</button>`}).join('');
+    const last=(DB.rounds||[]).filter(x=>x.tid===t.id).slice(-1)[0];
+    return `<button class="topic${t===next?' is-next':''}${st.done?' is-done':''}" type="button" data-t="${t.id}"><span class="tnum">${k+1}</span><span class="tbody"><span class="ttl">${esc(t.title)}</span><span class="tex">${esc(t.ex)}</span>${last?`<span class="tlast">Last time: <b>${last.score}/${last.n}</b> · ${GR(last.score/last.n*100)} · ⏱ ${fmtS(last.secs)}</span>`:''}<span class="pips" aria-label="${got} of ${n} steps">${pips}</span></span>${tag}</button>`}).join('');
   $('topics').querySelectorAll('.topic').forEach(b=>b.onclick=()=>startTopic(b.dataset.t));renderReport()}
 function ensureProblem(){
   if(DB.cur&&DB.cur.tid===DB.round.tid)return;const tid=DB.round.tid,q=DB.later[tid]||[];
@@ -352,8 +366,8 @@ function submit(raw){const o=DB.cur;if(!raw.trim())return;
   const ok=isRight(o,raw);if(ok===null){setFb('bad',`<p>${tipFor(o)}</p>`);return}
   o.answers.push(raw.trim());
   if(ok){return solved(o.tries===0&&o.hints===0&&!o.stepMode?'first':'fixed')}
-  o.tries++;save();
-  const dg=diagnose(o,raw);
+  o.tries++;
+  const dg=diagnose(o,raw);if(dg){(o.dgs=o.dgs||[]).push(mistakeTag(dg))}save();
   if(o.tries===1){setFb('bad',`<p><b class="h">Not quite.</b> Let's use the method from your book.</p>${dg?`<p>${dg}</p>`:''}<p>${method(o)}</p>${estimate(o)?`<p>${estimate(o)}</p>`:''}`);$('ans').select()}
   else startSteps('miss',dg)}
 function startSteps(why,dg){const o=DB.cur;o.stepMode=true;o.steps=stepsFor(o);o.si=0;o.work=[];
@@ -367,7 +381,7 @@ function stepsHTML(o){const st=o.steps[o.si];const done=o.work.map(w=>`<div clas
 function bindSteps(){$('stepForm').onsubmit=e=>{e.preventDefault();stepSubmit($('stepIn').value)};$('stepIn').focus({preventScroll:true})}
 function stepSubmit(raw){const o=DB.cur,st=o.steps[o.si];if(!raw.trim())return;
   if(st.final){const ok=isRight(o,raw);if(ok===null){stepHint(tipFor(o));return}o.answers.push(raw.trim());if(ok)return solved('fixed');
-    o.stepMiss++;save();if(o.stepMiss>=3)return giveUp();stepHint(`Look back at your steps and read the answer from them. ${diagnose(o,raw)||''}`);return}
+    o.stepMiss++;const dg=diagnose(o,raw);if(dg)(o.dgs=o.dgs||[]).push(mistakeTag(dg));save();if(o.stepMiss>=3)return giveUp();stepHint(`Look back at your steps and read the answer from them. ${dg||''}`);return}
   if(raw.trim().replace(/,/g,'')===st.a){o.work.push({q:st.q,v:st.a,note:st.note,pos:st.qd?st.pos:null});o.si++;o.stepMiss=0;save();render();return}
   o.stepMiss++;save();if(o.stepMiss>=4)return giveUp();
   stepHint(o.stepMiss>=2?`${st.h} Take your time and use paper.`:st.h)}
@@ -383,28 +397,53 @@ function solved(res){const o=DB.cur;finishItem(o,res);const earn=res==='first'?2
   DB.cur=null;save();$('nextBtn').onclick=render;$('nextBtn').focus();renderTrail();renderReport()}
 function finishItem(o,res){
   const dt=Math.min(Math.round((Date.now()-o.t0)/1000),900),D=day();D.secs+=dt;
-  D.items.push({r:res,op:o.op,L:o.L,tid:o.tid});round().items.push({r:res});
-  DB.log.push({t:Date.now(),tid:o.tid,op:o.op,L:o.L,q:o.word?`${o.word} (${o.text})`:o.text,a:o.answers.slice(0,4),c:o.show,r:res,dt,h:o.hints,steps:!!o.stepMode});
+  D.items.push({r:res,op:o.op,L:o.L,tid:o.tid});round().items.push({r:res,dt,L:o.L,op:o.op});round().secs=(round().secs||0)+dt;
+  DB.log.push({t:Date.now(),tid:o.tid,op:o.op,L:o.L,dg:(o.dgs||[]).filter(Boolean),q:o.word?`${o.word} (${o.text})`:o.text,a:o.answers.slice(0,4),c:o.show,r:res,dt,h:o.hints,steps:!!o.stepMode});
   if(DB.log.length>1500)DB.log=DB.log.slice(-1500);
   // inside each lesson: up one step after 2 first-try right in a row; down one after 2 misses in a row
   const t=TP(o.tid),st=tst(o.tid);st.n++;finishItem.up=false;finishItem.fin=false;
   if(res==='first'){st.first++;st.run++;st.miss=0;if(st.run>=2){st.run=0;if(st.i<t.steps.length-1){st.i++;finishItem.up=true}else if(!st.done){st.done=true;finishItem.fin=true}}}
   else{st.run=0;st.miss++;if(st.miss>=2){st.miss=0;if(st.i>0)st.i--}}
+  if(round().items.length===ROUND){const r=round(),sc=r.items.filter(x=>x.r==='first').length;
+    (DB.rounds=DB.rounds||[]).push({t:Date.now(),tid:r.tid,score:sc,n:ROUND,secs:r.secs,fixed:r.items.filter(x=>x.r==='fixed').length,missed:r.items.filter(x=>x.r==='missed').length,slow:Math.max(...r.items.map(x=>x.dt))});
+    const st2=tst(r.tid);if(st2.best==null||sc>st2.best)st2.best=sc}
   save()}
 function renderDone(){const r=round(),first=r.items.filter(x=>x.r==='first').length,t=TP(r.tid),k=TOPICS.indexOf(t),nx=TOPICS[k+1],st=tst(t.id);
   $('card').innerHTML=`<div class="cheer"><svg viewBox="0 0 120 80" width="160" aria-hidden="true"><path d="M5 75 L45 20 L62 42 L78 25 L115 75Z" fill="var(--track)"/><path d="M45 20 L54 32 L38 32Z" fill="var(--paper)"/><path d="M78 25v-20" stroke="var(--ink)" stroke-width="3"/><path d="M79 6h18l-5 6 5 6H79z" fill="var(--sun)"/></svg>
-   <p class="big">You reached the top!</p><p class="ask">${first} of ${r.items.length} right on the first try</p>
+   <p class="big">You reached the top!</p>
+   <div class="grade"><span class="gl">${GR(first/r.items.length*100)}</span><span><b>${first} / ${r.items.length}</b> right the first time<br>⏱ ${fmtS(r.secs||0)} · about ${Math.round((r.secs||0)/r.items.length)} seconds each</span></div>
+   ${first<r.items.length?`<p class="tip">${r.items.filter(x=>x.r==='fixed').length} fixed with help · ${r.items.filter(x=>x.r==='missed').length} to try again later</p>`:'<p class="ask">Perfect round! ★</p>'}
    <div class="row" style="justify-content:center">${st.done&&nx?`<button class="btn" id="nextTopic">Next lesson: ${esc(nx.title)}</button>`:''}<button class="btn ${st.done&&nx?'ghost':''}" id="againBtn">Practice this again</button><button class="btn ghost" id="homeBtn">All lessons</button></div></div>`;confetti(140);
   $('againBtn').onclick=()=>startTopic(t.id);$('homeBtn').onclick=home;if(st.done&&nx)$('nextTopic').onclick=()=>startTopic(nx.id)}
 
 // ---------- grown-up corner ----------
+function analysis(){const R=DB.rounds||[],out=[];
+  TOPICS.forEach(t=>{const rs=R.filter(x=>x.tid===t.id);if(!rs.length)return;const pct=Math.round(rs.reduce((a,x)=>a+x.score/x.n,0)/rs.length*100),sec=Math.round(rs.reduce((a,x)=>a+x.secs/x.n,0)/rs.length);
+    const first=rs[0].score/rs[0].n,last=rs[rs.length-1].score/rs[rs.length-1].n;out.push({t,pct,sec,n:rs.length,trend:rs.length>1?Math.round((last-first)*100):null})});
+  const tags={};DB.log.forEach(e=>(e.dg||[]).forEach(g=>{tags[g]=(tags[g]||0)+1}));
+  // skill steps from the log
+  const steps={};DB.log.forEach(e=>{const k=e.op+e.L;const s=steps[k]=steps[k]||{op:e.op,L:e.L,n:0,f:0,dt:0};s.n++;if(e.r==='first')s.f++;s.dt+=e.dt});
+  const st=Object.values(steps).filter(s=>s.n>=3);
+  return {topics:out,tags:Object.entries(tags).sort((a,b)=>b[1]-a[1]),strong:st.filter(s=>s.f/s.n>=.85).sort((a,b)=>b.f/b.n-a.f/a.n),weak:st.filter(s=>s.f/s.n<.6).sort((a,b)=>a.f/a.n-b.f/b.n),slow:st.filter(s=>s.dt/s.n>=90)}}
+function swHTML(){const A=analysis();if(!A.topics.length&&!A.strong.length&&!A.weak.length)return '<section><h3>Strengths and weaknesses</h3><p class="tip">This fills in after she finishes her first lesson round (10 problems).</p></section>';
+  const sk=s=>`${esc(stepName(s.op,s.L))} (${s.f}/${s.n} first try, ~${Math.round(s.dt/s.n)} s each)`;
+  return `<section class="sw"><h3>Strengths and weaknesses</h3>
+   <div><span class="pill s">Strengths</span> ${A.strong.length?A.strong.slice(0,4).map(sk).join('; '):'Not enough answers yet.'}</div>
+   <div><span class="pill w">Needs work</span> ${A.weak.length?A.weak.slice(0,4).map(sk).join('; '):'Nothing below 60% so far.'}</div>
+   ${A.slow.length?`<div><span class="pill w">Slow</span> ${A.slow.slice(0,3).map(sk).join('; ')}</div>`:''}
+   ${A.tags.length?`<div><span class="pill w">Common mistakes</span> ${A.tags.slice(0,4).map(([g,n])=>`${esc(g)} (${n}×)`).join('; ')}</div>`:''}
+   ${A.topics.length?`<div class="tbl"><table><tr><th>Lesson</th><th>Rounds</th><th>Average</th><th>Grade</th><th>Time each</th><th>Change</th></tr>${A.topics.map(x=>`<tr><td>${esc(x.t.title)}</td><td>${x.n}</td><td>${x.pct}%</td><td>${GR(x.pct)}</td><td>${x.sec} s</td><td>${x.trend==null?'–':(x.trend>=0?'+':'')+x.trend+' pts'}</td></tr>`).join('')}</table></div>`:''}</section>`}
+function roundsHTML(){const R=(DB.rounds||[]).slice(-12).reverse();if(!R.length)return '';
+  return `<section><h3>Graded rounds</h3><div class="tbl"><table><tr><th>When</th><th>Lesson</th><th>Score</th><th>Grade</th><th>Time</th><th>Each</th><th>With help</th><th>Not solved</th></tr>${R.map(x=>`<tr><td>${new Date(x.t).toLocaleDateString()}</td><td>${esc(TP(x.tid)?TP(x.tid).title:x.tid)}</td><td>${x.score}/${x.n}</td><td>${GR(x.score/x.n*100)}</td><td>${fmtS(x.secs)}</td><td>${Math.round(x.secs/x.n)} s</td><td>${x.fixed}</td><td>${x.missed}</td></tr>`).join('')}</table></div></section>`}
 function stepName(op,L){return (op==='m'?MLV:DLV)[L]}
 function renderReport(){
   const days=Object.entries(DB.days).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,10);
   const rows=days.map(([k,D])=>{const f=D.items.filter(x=>x.r==='first').length,m=D.items.filter(x=>x.r==='missed').length;return `<tr><td>${k}</td><td>${D.items.length}</td><td>${f}</td><td>${D.items.length-f-m}</td><td>${m}</td><td>${fmtS(D.secs)}</td><td>${D.hints}</td></tr>`}).join('');
   const tops=TOPICS.map(t=>{const st=tst(t.id),[op,L]=t.steps[Math.min(st.i,t.steps.length-1)];return `<tr><td>${esc(t.title)}</td><td>${st.done?'Finished ★':st.n?`step ${st.i+1} of ${t.steps.length}`:'not started'}</td><td>${st.n?esc(stepName(op,L)):'–'}</td><td>${st.n?GRADE(L):'–'}</td><td>${st.n?`${st.first}/${st.n}`:'–'}</td></tr>`}).join('');
   const mis=DB.log.filter(e=>e.r!=='first').slice(-15).reverse().map(e=>`<div class="miss"><div class="meta">${new Date(e.t).toLocaleString()} · ${esc(e.tid&&TP(e.tid)?TP(e.tid).title:(e.op==='m'?'Multiplication':'Division'))} (${esc(stepName(e.op,e.L))}) · ${e.r==='missed'?'not solved yet':'solved with help'}${e.steps?' · used steps':''}${e.h?` · ${e.h} hint${e.h>1?'s':''}`:''} · ${fmtS(e.dt)}</div>${esc(e.q)}<br>She answered: <span class="b">${esc(e.a.join(', ')||'–')}</span> · Correct: <span class="g">${esc(e.c)}</span></div>`).join('');
-  $('rep').innerHTML=`<p class="tip">She never sees levels or grades. In each lesson she moves up one step after 2 correct answers in a row (first try, no hints) and down one after 2 misses in a row. Wrong answers get the book's method and then a step-by-step walk-through where she fills in every number; the answer is never shown to her.</p>
+  $('rep').innerHTML=`<p class="tip">She never sees levels or grade levels; she does see her score and time after each round of 10. In each lesson she moves up one step after 2 correct answers in a row (first try, no hints) and down one after 2 misses in a row. Wrong answers get the book's method and then a step-by-step walk-through where she fills in every number; the answer is never shown to her.</p>
+   ${swHTML()}
+   ${roundsHTML()}
    <section><h3>Lessons</h3><div class="tbl"><table><tr><th>Lesson</th><th>Progress</th><th>Working on</th><th>About</th><th>First try</th></tr>${tops}</table></div></section>
    <section><h3>Practice by day</h3>${rows?`<div class="tbl"><table><tr><th>Day</th><th>Done</th><th>First try</th><th>With help</th><th>Not solved</th><th>Time</th><th>Hints</th></tr>${rows}</table></div>`:'<p class="tip">No practice yet. Results appear here after her first problem.</p>'}</section>
    <section><h3>Recent mistakes</h3>${mis||'<p class="tip">No mistakes yet.</p>'}</section>
@@ -413,6 +452,8 @@ function renderReport(){
   $('copyBtn').onclick=copyReport}
 function reportText(){const L=[`Math Climb report (${dayKey()})`,''];
   TOPICS.forEach(t=>{const st=tst(t.id);if(!st.n)return;const [op,lv]=t.steps[Math.min(st.i,t.steps.length-1)];L.push(`${t.title}: ${st.done?'finished':`step ${st.i+1} of ${t.steps.length} (${stepName(op,lv)}, ${GRADE(lv)})`}, ${st.first}/${st.n} first try`)});
+  const A=analysis();L.push('','Strengths: '+(A.strong.map(s=>stepName(s.op,s.L)).join(', ')||'-'),'Needs work: '+(A.weak.map(s=>stepName(s.op,s.L)).join(', ')||'-'),'Common mistakes: '+(A.tags.map(([g,n])=>`${g} (${n}x)`).join(', ')||'-'),'','Graded rounds:');
+  (DB.rounds||[]).slice(-10).reverse().forEach(x=>L.push(`- ${new Date(x.t).toLocaleDateString()} ${TP(x.tid)?TP(x.tid).title:x.tid}: ${x.score}/${x.n} (${GR(x.score/x.n*100)}), ${fmtS(x.secs)}`));
   L.push('');Object.entries(DB.days).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,7).forEach(([k,D])=>L.push(`${k}: ${D.items.filter(x=>x.r==='first').length}/${D.items.length} first try, ${fmtS(D.secs)}, ${D.hints} hints`));
   L.push('','Recent mistakes:');DB.log.filter(e=>e.r!=='first').slice(-15).reverse().forEach(e=>L.push(`- ${e.q}: answered ${e.a.join(', ')||'-'}; correct ${e.c} (${e.r==='missed'?'not solved yet':'solved with help'})`));return L.join('\n')}
 function copyReport(){const t=reportText(),ta=$('repText');ta.value=t;

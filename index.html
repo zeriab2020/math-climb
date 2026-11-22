@@ -101,7 +101,8 @@ form.ans input:focus{outline:none;border-color:var(--accent)}
 .tright{display:grid;gap:8px;justify-items:end;flex:none}
 .flower{position:fixed;z-index:0;pointer-events:none;width:150px;height:150px}
 .flower.tl{top:-62px;left:-62px;opacity:.9}.flower.br{bottom:-30px;right:-30px;transform:rotate(25deg)}.flower.tr{bottom:120px;left:-44px;width:100px;height:100px;opacity:.85}
-@media (max-width:520px){.flower{width:120px;height:120px}.flower.tr{width:84px;height:84px}}
+.flower.f4{top:38%;right:-46px;width:110px;height:110px;transform:rotate(15deg)}.flower.f5{top:62%;left:-40px;width:90px;height:90px}.flower.f6{bottom:-40px;left:30%;width:100px;height:100px;opacity:.8}.flower.f7{top:18%;left:-36px;width:70px;height:70px}.flower.f8{top:-40px;right:22%;width:90px;height:90px;opacity:.8}
+@media (max-width:520px){.flower.f4,.flower.f6{width:80px;height:80px}.flower.f8{right:30%;width:70px;height:70px}.flower{width:120px;height:120px}.flower.tr{width:84px;height:84px}}
 .tlast{font:700 .82rem var(--body);color:var(--muted)}
 .tlast b{color:var(--accent)}
 .clock{font-variant-numeric:tabular-nums}
@@ -116,6 +117,7 @@ form.ans input:focus{outline:none;border-color:var(--accent)}
 .tag{flex:none;font:800 .78rem var(--body);border-radius:999px;padding:4px 10px;background:var(--track);color:var(--accent)}
 .tag.next{background:var(--accent);color:var(--accent-ink)}
 .tag.done{background:var(--sun);color:#3a1631}
+.backbar{justify-self:start;font-size:1.1rem;padding:12px 22px}
 .back{font:800 .85rem var(--body);background:none;border:0;color:var(--accent);cursor:pointer;padding:0;letter-spacing:0;text-transform:none}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:20;width:100%;height:100%}
 details.grown{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
@@ -134,6 +136,11 @@ textarea{width:100%;min-height:8em;font:400 .85rem var(--mono);background:var(--
 </style>
 
 <canvas id="confetti" aria-hidden="true"></canvas>
+<svg class="flower f4" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(50 50)"><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(0.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(60.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(120.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(180.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(240.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(300.0)"/><circle r="11" fill="var(--sun)"/><circle r="5" fill="#f08c00" opacity=".5"/></g></svg>
+<svg class="flower f5" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(50 50)"><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(0.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(72.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(144.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(216.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(288.0)"/><circle r="11" fill="var(--sun)"/><circle r="5" fill="#f08c00" opacity=".5"/></g></svg>
+<svg class="flower f6" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(50 50)"><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent-2)" transform="rotate(0.0)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent-2)" transform="rotate(45.0)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent-2)" transform="rotate(90.0)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent-2)" transform="rotate(135.0)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent-2)" transform="rotate(180.0)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent-2)" transform="rotate(225.0)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent-2)" transform="rotate(270.0)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent-2)" transform="rotate(315.0)"/><circle r="11" fill="var(--sun)"/><circle r="5" fill="#f08c00" opacity=".5"/></g></svg>
+<svg class="flower f7" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(50 50)"><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ffb3d4" transform="rotate(0.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ffb3d4" transform="rotate(60.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ffb3d4" transform="rotate(120.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ffb3d4" transform="rotate(180.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ffb3d4" transform="rotate(240.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ffb3d4" transform="rotate(300.0)"/><circle r="11" fill="var(--sun)"/><circle r="5" fill="#f08c00" opacity=".5"/></g></svg>
+<svg class="flower f8" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(50 50)"><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent)" transform="rotate(0.0)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent)" transform="rotate(51.42857142857143)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent)" transform="rotate(102.85714285714286)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent)" transform="rotate(154.28571428571428)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent)" transform="rotate(205.71428571428572)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent)" transform="rotate(257.14285714285717)"/><ellipse cx="0" cy="-24" rx="12" ry="18" fill="var(--accent)" transform="rotate(308.57142857142856)"/><circle r="11" fill="var(--sun)"/><circle r="5" fill="#f08c00" opacity=".5"/></g></svg>
 <svg class="flower tl" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(50 50)"><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(0.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(60.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(120.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(180.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(240.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent)" transform="rotate(300.0)"/><circle r="11" fill="var(--sun)"/><circle r="5" fill="#f08c00" opacity=".5"/></g></svg>
 <svg class="flower br" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(50 50)"><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent-2)" transform="rotate(0.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent-2)" transform="rotate(72.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent-2)" transform="rotate(144.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent-2)" transform="rotate(216.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="var(--accent-2)" transform="rotate(288.0)"/><circle r="11" fill="var(--sun)"/><circle r="5" fill="#f08c00" opacity=".5"/></g></svg>
 <svg class="flower tr" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(50 50)"><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(0.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(45.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(90.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(135.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(180.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(225.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(270.0)"/><ellipse cx="0" cy="-24" rx="12" ry="20" fill="#ff9ccb" transform="rotate(315.0)"/><circle r="11" fill="var(--sun)"/><circle r="5" fill="#f08c00" opacity=".5"/></g></svg>
@@ -142,6 +149,7 @@ textarea{width:100%;min-height:8em;font:400 .85rem var(--mono);background:var(--
     <div><h1>Math <span>Climb</span></h1><p class="hello" id="hello">Pick a lesson to practice</p></div>
     <span class="stars" id="stars" title="Stars you have earned"><i>★</i> <b id="starN">0</b></span>
   </header>
+  <button class="btn ghost backbar" type="button" id="homeTop" hidden>‹ Back to all lessons</button>
   <div class="trail" id="today" aria-label="Your climb" hidden></div>
   <section class="topics" id="topics" aria-label="Lessons"></section>
   <main class="card" id="card" aria-live="polite"></main>
@@ -324,7 +332,7 @@ const roundSecs=()=>{const r=round();if(!r)return 0;return (r.secs||0)+(DB.cur&&
 setInterval(()=>{const el=$('timer');if(el&&round()&&round().items.length<ROUND)el.textContent=fmtS(roundSecs())},1000);
 const MISTAKE=[[/row 2 is missing its 0/,'Forgets the 0 in row 2'],[/added/,'Adds instead of multiplying'],[/decimal point/,'Puts the decimal point in the wrong place'],[/remainder must be less/,'Remainder bigger than the divisor'],[/digit above every digit/,'Skips a 0 in the answer (division)'],[/last subtraction/,'Subtraction slip at the end (division)']];
 const mistakeTag=m=>{const f=MISTAKE.find(x=>x[0].test(m));return f?f[1]:''};
-function renderTrail(){const r=round(),el=$('today');$('starN').textContent=DB.stars||0;if(!r){el.hidden=true;return}el.hidden=false;
+function renderTrail(){const r=round(),el=$('today');$('starN').textContent=DB.stars||0;$('homeTop').hidden=!r;if(!r){el.hidden=true;return}el.hidden=false;
   const done=r.items.length,pct=Math.min(100,done/ROUND*100),left=Math.max(0,ROUND-done);
   el.innerHTML=`<div class="lbl"><span>${esc(TP(r.tid).title)}</span><span><span class="clock" aria-label="Time">⏱ <b id="timer">${fmtS(roundSecs())}</b></span> · ${left?`${left} to go`:'Done!'}</span></div>
    <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="${ROUND}" aria-valuenow="${Math.min(done,ROUND)}"><div class="fill" style="width:${pct}%"></div><span style="position:absolute;left:${Math.max(3,Math.min(97,pct))}%;top:50%">${CLIMBER}</span>${FLAG}</div>`}
@@ -350,14 +358,13 @@ function render(){
   ensureProblem();const o=DB.cur;renderTrail();
   const n=round().items.length+1;
   let qd=null;if(o.op==='d'&&o.stepMode&&!o.dec){qd={};o.work.forEach(w=>{if(w.pos!=null)qd[w.pos]=w.v})}
-  $('card').innerHTML=`<div class="top"><button class="back" type="button" id="backBtn">‹ All lessons</button><span>${o.again?'Try this one again · ':''}Problem ${n} of ${ROUND}</span></div>
+  $('card').innerHTML=`<div class="top"><span>${esc(TP(round().tid).title)}</span><span>${o.again?'Try this one again · ':''}Problem ${n} of ${ROUND}</span></div>
     ${o.word?`<p class="word">${esc(o.word)}</p>`:`<p class="ask">${o.op==='m'?'Multiply.':o.r?'Divide. Write the remainder like '+rEx(o)+'.':'Divide.'}</p>`}
     <div class="prob">${probHTML(o,qd)}</div>
     <div id="fbBox"></div>
     ${o.stepMode?stepsHTML(o):''}
     <form class="ans" id="ansForm" ${o.stepMode?'hidden':''}><label class="tip" for="ans" style="flex-basis:100%">${tipFor(o)}</label><input id="ans" inputmode="decimal" autocomplete="off" placeholder="Your answer"><button class="btn" type="submit">Check</button></form>
     <div class="row" id="helpRow" ${o.stepMode?'hidden':''}><button class="btn soft" type="button" id="hintBtn">Need a hint?</button><button class="btn ghost" type="button" id="stepBtn">Show me the steps</button></div>`;
-  $('backBtn').onclick=home;
   $('ansForm').onsubmit=e=>{e.preventDefault();submit($('ans').value)};
   $('hintBtn').onclick=hint;$('stepBtn').onclick=()=>startSteps('asked');
   if(o.stepMode)bindSteps();else $('ans').focus({preventScroll:true});
@@ -477,6 +484,7 @@ function confetti(n){try{if(matchMedia('(prefers-reduced-motion: reduce)').match
   let t=0;(function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.28;p.r+=.2;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore()});if(++t<90)requestAnimationFrame(f);else x.clearRect(0,0,c.width,c.height)})()}
 // ---------- start ----------
 load();
+$('homeTop').onclick=home;
 if(DB.round&&!TP(DB.round.tid))DB.round=null;
 render();
 </script>
